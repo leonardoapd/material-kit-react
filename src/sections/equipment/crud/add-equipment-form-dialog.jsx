@@ -17,16 +17,18 @@ import {
   DialogActions,
 } from '@mui/material';
 
-import { EquipmentCategory } from 'src/enums/equipment-category';
+import { EquipmentCategory } from 'src/enums/enums';
 import { addEquipment } from 'src/features/equipment/equipmentSlice';
-import {
-  closeNewEquipmentDialog,
-  selectNewEquipmentDialogOpen,
-} from 'src/features/equipment-dialogs/equipmentDialogSlice';
+// import {
+//   closeNewEquipmentDialog,
+//   selectNewEquipmentDialogOpen,
+// } from 'src/features/equipment-dialogs/dialogsSlice';
+
+import { closeDialog, selectDialogOpen } from 'src/features/dialogs/dialogsSlice';
 
 export default function AddEquipmentFormDialog() {
   const dispatch = useDispatch();
-  const open = useSelector(selectNewEquipmentDialogOpen);
+  const open = useSelector((state) => selectDialogOpen(state, 'addEquipment'));
 
   const [addForm, setAddForm] = useState({
     code: '',
@@ -41,7 +43,7 @@ export default function AddEquipmentFormDialog() {
   const { code, serialNumber, name, location, model, purchaseDate, category } = addForm;
 
   const handleClose = () => {
-    dispatch(closeNewEquipmentDialog());
+    dispatch(closeDialog({ dialogType: 'addEquipment' }));
   };
 
   const handleChange = (event) => {

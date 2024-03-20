@@ -13,11 +13,11 @@ const initialState = {
     remove: {
       open: false,
       data: null,
-    }
+    },
   },
 };
 
-export const equipmentDialogSlice = createSlice({
+export const dialogsSlice = createSlice({
   name: 'equipmentDialog',
   initialState,
   reducers: {
@@ -67,14 +67,20 @@ export const {
   closeEditEquipmentDialog,
   openDeleteEquipmentDialog,
   closeDeleteEquipmentDialog,
-} = equipmentDialogSlice.actions;
+} = dialogsSlice.actions;
 
 export const selectEquipmentDialog = (state) => state.equipmentDialog.equipmentDialog;
-export const selectNewEquipmentDialogOpen = (state) => state.equipmentDialog.equipmentDialog.new.open;
-export const selectEditEquipmentDialogOpen = (state) => state.equipmentDialog.equipmentDialog.edit.open;
-export const selectDeleteEquipmentDialogOpen = (state) => state.equipmentDialog.equipmentDialog.remove.open;
-export const selectNewEquipmentDialogData = (state) => state.equipmentDialog.equipmentDialog.new.data;
-export const selectEditEquipmentDialogData = (state) => state.equipmentDialog.equipmentDialog.edit.data;
-export const selectDeleteEquipmentDialogData = (state) => state.equipmentDialog.equipmentDialog.remove.data;
+export const selectNewEquipmentDialogOpen = (state) =>
+  state.equipmentDialog.equipmentDialog.new.open;
+export const selectEditEquipmentDialogOpen = (state) =>
+  state.equipmentDialog.equipmentDialog.edit.open;
+export const selectDeleteEquipmentDialogOpen = (state) =>
+  state.equipmentDialog.equipmentDialog.remove.open;
+export const selectNewEquipmentDialogData = (state) =>
+  state.equipmentDialog.equipmentDialog.new.data;
+export const selectEditEquipmentDialogData = (state) =>
+  state.equipmentDialog.equipmentDialog.edit.data;
+export const selectDeleteEquipmentDialogData = (state) =>
+  state.equipmentDialog.equipmentDialog.remove.data;
 
-export default equipmentDialogSlice.reducer;
+export default dialogsSlice.reducer;

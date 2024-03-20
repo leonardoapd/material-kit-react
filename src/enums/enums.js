@@ -4,5 +4,6 @@ export const EquipmentCategory = {
   Impresora: 2,
 };
 
+
 export const getCategoryFromValue = (value) =>
   Object.keys(EquipmentCategory).find((key) => EquipmentCategory[key] === value);

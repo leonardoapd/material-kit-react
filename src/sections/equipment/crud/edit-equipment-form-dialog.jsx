@@ -19,18 +19,21 @@ import {
   DialogActions,
 } from '@mui/material';
 
-import { EquipmentCategory } from 'src/enums/equipment-category';
+import { EquipmentCategory } from 'src/enums/enums';
 import { editEquipment } from 'src/features/equipment/equipmentSlice';
-import {
-  closeEditEquipmentDialog,
-  selectEditEquipmentDialogOpen,
-  selectEditEquipmentDialogData,
-} from 'src/features/equipment-dialogs/equipmentDialogSlice';
+// import {
+//   closeEditEquipmentDialog,
+//   selectEditEquipmentDialogOpen,
+//   selectEditEquipmentDialogData,
+// } from 'src/features/equipment-dialogs/dialogsSlice';
+
+import { closeDialog, selectDialogOpen, selectDialogData } from 'src/features/dialogs/dialogsSlice';
 
 export default function EditEquipmentFormDialog({ employees }) {
   const dispatch = useDispatch();
 
-  const open = useSelector(selectEditEquipmentDialogOpen);
+  // const open = useSelector(selectEditEquipmentDialogOpen);
+  const open = useSelector((state) => selectDialogOpen(state, 'editEquipment'));
   const [editForm, setEditForm] = useState({
     name: '',
     code: '',
@@ -42,7 +45,8 @@ export default function EditEquipmentFormDialog({ employees }) {
     description: '',
     accountableId: '',
   });
-  const equipment = useSelector(selectEditEquipmentDialogData);
+  // const equipment = useSelector(selectEditEquipmentDialogData);
+  const equipment = useSelector((state) => selectDialogData(state, 'editEquipment'));
 
   useEffect(() => {
     if (equipment) {
@@ -50,10 +54,12 @@ export default function EditEquipmentFormDialog({ employees }) {
     }
   }, [equipment]);
 
-  const { name, code, serialNumber, location, model, category, description, accountableId } = editForm;
+  const { name, code, serialNumber, location, model, category, description, accountableId } =
+    editForm;
 
   const handleClose = () => {
-    dispatch(closeEditEquipmentDialog());
+    // dispatch(closeEditEquipmentDialog());
+    dispatch(closeDialog({ dialogType: 'editEquipment' }));
   };
 
   const handleChange = (event) => {
@@ -161,7 +167,9 @@ export default function EditEquipmentFormDialog({ employees }) {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                value={editForm.purchaseDate ? format(new Date(editForm.purchaseDate), 'yyyy-MM-dd') : ''}
+                value={
+                  editForm.purchaseDate ? format(new Date(editForm.purchaseDate), 'yyyy-MM-dd') : ''
+                }
                 onChange={handleChange}
                 name="purchaseDate"
               />

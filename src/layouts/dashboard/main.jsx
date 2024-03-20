@@ -1,8 +1,15 @@
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
 
 import { useResponsive } from 'src/hooks/use-responsive';
+
+import {
+  fetchUiParameters,
+  selectUiParametersStatus,
+} from 'src/features/uiparameters/uiParametersSlice';
 
 import { NAV, HEADER } from './config-layout';
 
@@ -11,7 +18,15 @@ import { NAV, HEADER } from './config-layout';
 const SPACING = 8;
 
 export default function Main({ children, sx, ...other }) {
+  const dispatch = useDispatch();
+  const status = useSelector(selectUiParametersStatus);
   const lgUp = useResponsive('up', 'lg');
+
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchUiParameters());
+    }
+  }, [dispatch, status]);
 
   return (
     <Box

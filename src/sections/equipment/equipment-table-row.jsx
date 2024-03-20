@@ -14,16 +14,19 @@ import {
   IconButton,
 } from '@mui/material';
 
-import { getCategoryFromValue } from 'src/enums/equipment-category';
-import { openEditEquipmentDialog, openDeleteEquipmentDialog } from 'src/features/equipment-dialogs/equipmentDialogSlice';
+import { getCategoryFromValue } from 'src/enums/enums';
+import { openDialog } from 'src/features/dialogs/dialogsSlice';
+// import {
+//   openEditEquipmentDialog,
+//   openDeleteEquipmentDialog,
+// } from 'src/features/equipment-dialogs/dialogsSlice';
 
 import Iconify from 'src/components/iconify';
-
 
 export default function EquipmentTableRow({ rowInfo, selected, handleClick, employees }) {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(null);
-  
+
   const { id, name, code, location, purchaseDate, serialNumber, photo, model, category } = rowInfo;
   const categoryName = getCategoryFromValue(category);
   const normalDate = new Date(purchaseDate);
@@ -39,14 +42,14 @@ export default function EquipmentTableRow({ rowInfo, selected, handleClick, empl
   };
 
   const handleDelete = () => {
-    dispatch(openDeleteEquipmentDialog(id));
+    dispatch(openDialog({ dialogType: 'deleteEquipment', data: id }));
     handleCloseMenu();
   };
 
   const handleEdit = () => {
-    dispatch(openEditEquipmentDialog(rowInfo));
+    dispatch(openDialog({ dialogType: 'editEquipment', data: rowInfo }));
     handleCloseMenu();
-  }
+  };
 
   return (
     <>

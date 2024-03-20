@@ -11,30 +11,36 @@ import {
 } from '@mui/material';
 
 import { removeEquipment } from 'src/features/equipment/equipmentSlice';
-import {
-  closeDeleteEquipmentDialog,
-  selectDeleteEquipmentDialogOpen,
-  selectDeleteEquipmentDialogData,
-} from 'src/features/equipment-dialogs/equipmentDialogSlice';
+// import {
+//   closeDeleteEquipmentDialog,
+//   selectDeleteEquipmentDialogOpen,
+//   selectDeleteEquipmentDialogData,
+// } from 'src/features/equipment-dialogs/dialogsSlice';
+
+import { closeDialog, selectDialogOpen, selectDialogData } from 'src/features/dialogs/dialogsSlice';
 
 export default function DeleteConfirmationDialog() {
   const dispatch = useDispatch();
-  const open = useSelector(selectDeleteEquipmentDialogOpen);
-  const data  = useSelector(selectDeleteEquipmentDialogData);
+  // const open = useSelector(selectDeleteEquipmentDialogOpen);
+  // const data = useSelector(selectDeleteEquipmentDialogData);
+  const open = useSelector((state) => selectDialogOpen(state, 'deleteEquipment'));
+  const data = useSelector((state) => selectDialogData(state, 'deleteEquipment'));
   const id = data;
 
   const handleClose = () => {
-    dispatch(closeDeleteEquipmentDialog());
+    dispatch(closeDialog({ dialogType: 'deleteEquipment' }));
   };
 
-  const handleConfirm =  () => {
+  const handleConfirm = () => {
     dispatch(removeEquipment(id));
     handleClose();
   };
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle id="alert-dialog-title">Estas seguro que deseas eliminar este equipo?</DialogTitle>
+      <DialogTitle id="alert-dialog-title">
+        Estas seguro que deseas eliminar este equipo?
+      </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
           Esta acción no se puede deshacer.
@@ -51,4 +57,3 @@ export default function DeleteConfirmationDialog() {
     </Dialog>
   );
 }
-

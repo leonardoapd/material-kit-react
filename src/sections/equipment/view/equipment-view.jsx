@@ -12,14 +12,14 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { openNewEquipmentDialog } from 'src/features/equipment-dialogs/equipmentDialogSlice';
+// import { openNewEquipmentDialog } from 'src/features/equipment-dialogs/dialogsSlice';
+import { openDialog } from 'src/features/dialogs/dialogsSlice';
 // import { data } from 'src/_mock/inventory';
 import {
   fetchEmployees,
   selectEmployees,
   selectEmployeeStatus,
 } from 'src/features/employee/employeeSlice';
-// import { getInventory } from 'src/queries/inventory/inventoryService';
 import {
   fetchEquipment,
   selectEquipment,
@@ -58,7 +58,6 @@ export default function EquipmentView() {
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [rowSelected, setRowSelected] = useState({});
-  const [openMaintenanceDialog, setOpenMaintenanceDialog] = useState(false);
 
   useEffect(() => {
     if (status === 'idle') {
@@ -112,10 +111,6 @@ export default function EquipmentView() {
     setSelected(newSelected);
   };
 
-  const handleToggleMaintenanceDialog = () => {
-    setOpenMaintenanceDialog(!openMaintenanceDialog);
-  };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -131,7 +126,7 @@ export default function EquipmentView() {
   };
 
   const handleOpenAddEquipmentDialog = () => {
-    dispatch(openNewEquipmentDialog());
+    dispatch(openDialog({ dialogType: 'addEquipment' }));
   };
 
   if (status === 'loading') return <Loader />;
@@ -172,7 +167,6 @@ export default function EquipmentView() {
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
-          onSchedule={handleToggleMaintenanceDialog}
         />
 
         <Scrollbar>
@@ -235,9 +229,7 @@ export default function EquipmentView() {
       <AddEquipmentDialog />
 
       <AddMaintenanceDialog
-        open={openMaintenanceDialog}
-        onClose={handleToggleMaintenanceDialog}
-        onConfirm={() => console.log('confirm')}
+        inventory={data}
         selected={rowSelected}
       />
 
