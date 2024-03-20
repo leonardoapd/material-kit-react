@@ -7,7 +7,7 @@ import { useScrollToTop } from 'src/hooks/use-scroll-to-top';
 
 import Router from 'src/routes/sections';
 import ThemeProvider from 'src/theme';
-import store from 'src/state/store';
+import store from 'src/app/store';
 
 const queryClient = new QueryClient();
 

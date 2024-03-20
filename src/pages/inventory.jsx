@@ -7,7 +7,7 @@ export default function InventoryPage() {
   return (
     <>
       <Helmet>
-        <title> Equipment | Minimal UI </title>
+        <title> Inventario de Equipos | Sumilan </title>
       </Helmet>
 
       <EquipmentView />

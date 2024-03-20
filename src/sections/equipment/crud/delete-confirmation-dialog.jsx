@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   Dialog,
@@ -10,38 +10,45 @@ import {
   DialogContentText,
 } from '@mui/material';
 
-export default function DeleteConfirmationDialog({ open, onClose, onConfirm }) {
+import { removeEquipment } from 'src/features/equipment/equipmentSlice';
+import {
+  closeDeleteEquipmentDialog,
+  selectDeleteEquipmentDialogOpen,
+  selectDeleteEquipmentDialogData,
+} from 'src/features/equipment-dialogs/equipmentDialogSlice';
+
+export default function DeleteConfirmationDialog() {
+  const dispatch = useDispatch();
+  const open = useSelector(selectDeleteEquipmentDialogOpen);
+  const data  = useSelector(selectDeleteEquipmentDialogData);
+  const id = data;
+
   const handleClose = () => {
-    onClose();
+    dispatch(closeDeleteEquipmentDialog());
   };
 
-  const handleConfirm = () => {
-    onConfirm();
+  const handleConfirm =  () => {
+    dispatch(removeEquipment(id));
     handleClose();
   };
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle id="alert-dialog-title">Do you want to delete this item?</DialogTitle>
+      <DialogTitle id="alert-dialog-title">Estas seguro que deseas eliminar este equipo?</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          This action cannot be undone.
+          Esta acción no se puede deshacer.
         </DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} variant="outlined">
-          No, cancel
+          No, cancelar
         </Button>
         <Button onClick={handleConfirm} variant="contained" autoFocus color="error">
-          Yes, delete
+          Si, eliminar
         </Button>
       </DialogActions>
     </Dialog>
   );
 }
 
-DeleteConfirmationDialog.propTypes = {
-  open: PropTypes.bool,
-  onClose: PropTypes.func,
-  onConfirm: PropTypes.func,
-};

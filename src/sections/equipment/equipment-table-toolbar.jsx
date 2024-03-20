@@ -11,9 +11,43 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableToolbar({ numSelected, filterName, onFilterName, onDelete }) {
-  const handleDelete = () => {
-    onDelete();
+export default function EquipmentTableToolbar({
+  numSelected,
+  filterName,
+  onFilterName,
+  onDelete,
+  onSchedule,
+}) {
+  const handleSchedule = () => {
+    onSchedule();
+  };
+
+  const renderOptions = () => {
+    if (numSelected > 0 && numSelected < 2) {
+      return (
+        <Tooltip title="Programar Mantenimiento">
+          <IconButton onClick={handleSchedule}>
+            <Iconify icon="ic:schedule" />
+          </IconButton>
+        </Tooltip>
+      );
+    }
+    if (numSelected > 1) {
+      return (
+        <Tooltip title="Eliminar">
+          <IconButton onClick={onDelete}>
+            <Iconify icon="ic:round-delete" />
+          </IconButton>
+        </Tooltip>
+      );
+    }
+    return (
+      <Tooltip title="Filtrar lista">
+        <IconButton>
+          <Iconify icon="ic:round-filter-list" />
+        </IconButton>
+      </Tooltip>
+    );
   };
 
   return (
@@ -49,26 +83,15 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
         />
       )}
 
-      {numSelected > 0 ? (
-        <Tooltip title="Schedule Maintenance">
-          <IconButton onClick={handleDelete}>
-            <Iconify icon="akar-icons:schedule" />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <Iconify icon="ic:round-filter-list" />
-          </IconButton>
-        </Tooltip>
-      )}
+      {renderOptions()}
     </Toolbar>
   );
 }
 
-UserTableToolbar.propTypes = {
+EquipmentTableToolbar.propTypes = {
   numSelected: PropTypes.number,
   filterName: PropTypes.string,
   onFilterName: PropTypes.func,
   onDelete: PropTypes.func,
+  onSchedule: PropTypes.func,
 };

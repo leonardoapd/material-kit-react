@@ -1,5 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import LoadingButton from '@mui/lab/LoadingButton';
 import {
@@ -7,20 +7,62 @@ import {
   Stack,
   Dialog,
   Button,
+  Select,
+  MenuItem,
   TextField,
+  InputLabel,
   DialogTitle,
+  FormControl,
   DialogContent,
   DialogActions,
 } from '@mui/material';
 
-export default function AddEquipmentFormDialog({ open, onClose, onConfirm }) {
+import { EquipmentCategory } from 'src/enums/equipment-category';
+import { addEquipment } from 'src/features/equipment/equipmentSlice';
+import {
+  closeNewEquipmentDialog,
+  selectNewEquipmentDialogOpen,
+} from 'src/features/equipment-dialogs/equipmentDialogSlice';
+
+export default function AddEquipmentFormDialog() {
+  const dispatch = useDispatch();
+  const open = useSelector(selectNewEquipmentDialogOpen);
+
+  const [addForm, setAddForm] = useState({
+    code: '',
+    serialNumber: '',
+    name: '',
+    location: '',
+    purchaseDate: '',
+    model: '',
+    category: EquipmentCategory.Computador,
+  });
+
+  const { code, serialNumber, name, location, model, purchaseDate, category } = addForm;
+
   const handleClose = () => {
-    onClose();
+    dispatch(closeNewEquipmentDialog());
+  };
+
+  const handleChange = (event) => {
+    setAddForm({
+      ...addForm,
+      [event.target.name]: event.target.value,
+    });
   };
 
   const handleConfirm = () => {
-    onConfirm();
+    dispatch(addEquipment(addForm));
     handleClose();
+    setAddForm({
+      code: '',
+      serialNumber: '',
+      name: '',
+      location: '',
+      purchaseDate: '',
+      model: '',
+      category: EquipmentCategory.Computador,
+    });
   };
 
   return (
@@ -30,26 +72,81 @@ export default function AddEquipmentFormDialog({ open, onClose, onConfirm }) {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Stack direction="row" spacing={2}>
-              <TextField fullWidth label="Codigo" variant="outlined" />
-              <TextField fullWidth label="Serial" variant="outlined" />
+              <TextField
+                fullWidth
+                label="Codigo"
+                variant="outlined"
+                value={code}
+                onChange={handleChange}
+                name="code"
+              />
+              <TextField
+                fullWidth
+                label="Serial"
+                variant="outlined"
+                value={serialNumber}
+                onChange={handleChange}
+                name="serialNumber"
+              />
             </Stack>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField fullWidth label="Nombre" variant="outlined" />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField fullWidth label="Ubicacion" variant="outlined" />
           </Grid>
           <Grid item xs={12}>
             <TextField
               fullWidth
-              label="Fecha de Compra"
+              label="Nombre"
               variant="outlined"
-              type="date"
-              InputLabelProps={{
-                shrink: true,
-              }}
+              value={name}
+              onChange={handleChange}
+              name="name"
             />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Ubicacion"
+              variant="outlined"
+              value={location}
+              onChange={handleChange}
+              name="location"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Stack direction="row" spacing={2}>
+              <TextField
+                fullWidth
+                label="Fecha de compra"
+                type="date"
+                variant="outlined"
+                InputLabelProps={{ shrink: true }}
+                value={purchaseDate}
+                onChange={handleChange}
+                name="purchaseDate"
+              />
+              <TextField
+                fullWidth
+                label="Modelo"
+                variant="outlined"
+                value={model}
+                onChange={handleChange}
+                name="model"
+              />
+              <FormControl fullWidth variant="outlined">
+                <InputLabel id="category">Categoria</InputLabel>
+                <Select
+                  labelId="category"
+                  id="category"
+                  label="Categoria"
+                  variant="outlined"
+                  value={category}
+                  onChange={handleChange}
+                  name="category"
+                >
+                  <MenuItem value={EquipmentCategory.Computador}>Computadora</MenuItem>
+                  <MenuItem value={EquipmentCategory.Monitor}>Monitor</MenuItem>
+                  <MenuItem value={EquipmentCategory.Impresora}>Impresora</MenuItem>
+                </Select>
+              </FormControl>
+            </Stack>
           </Grid>
         </Grid>
       </DialogContent>
@@ -70,9 +167,3 @@ export default function AddEquipmentFormDialog({ open, onClose, onConfirm }) {
     </Dialog>
   );
 }
-
-AddEquipmentFormDialog.propTypes = {
-  open: PropTypes.bool,
-  onClose: PropTypes.func,
-  onConfirm: PropTypes.func,
-};

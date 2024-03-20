@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import {
   Stack,
@@ -13,33 +14,21 @@ import {
   IconButton,
 } from '@mui/material';
 
-// import { removeItem } from 'src/state/features/inventory/inventorySlice';
-// import { useDeleteInventoryData } from 'src/queries/inventory/inventoryService';
+import { getCategoryFromValue } from 'src/enums/equipment-category';
+import { openEditEquipmentDialog, openDeleteEquipmentDialog } from 'src/features/equipment-dialogs/equipmentDialogSlice';
 
 import Iconify from 'src/components/iconify';
 
-import EditEquipmentDialog from './crud/edit-equipment-form-dialog';
-import DeleteConfirmationDialog from './crud/delete-confirmation-dialog';
 
-export default function UserTableRow({
-  id,
-  selected,
-  name,
-  code,
-  location,
-  purchaseDate,
-  serialNumber,
-  image,
-  handleClick,
-}) {
-  // const dispatch = useDispatch();
-  // const { mutateAsync } = useDeleteInventoryData();
+export default function EquipmentTableRow({ rowInfo, selected, handleClick, employees }) {
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(null);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [openEditDialog, setOpenEditDialog] = useState(false);
-
+  
+  const { id, name, code, location, purchaseDate, serialNumber, photo, model, category } = rowInfo;
+  const categoryName = getCategoryFromValue(category);
   const normalDate = new Date(purchaseDate);
   const formattedDate = normalDate.toLocaleDateString('en-GB');
+  const accountable = employees.find((employee) => employee.id === rowInfo.accountableId)?.name;
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -49,25 +38,15 @@ export default function UserTableRow({
     setOpen(null);
   };
 
-  const handleToggleDeleteDialog = () => {
-    setOpenDialog(!openDialog);
-    setOpen(false);
+  const handleDelete = () => {
+    dispatch(openDeleteEquipmentDialog(id));
+    handleCloseMenu();
   };
 
-  const handleToggleEditDialog = () => {
-    setOpenEditDialog(!openEditDialog);
-    setOpen(false);
-  };
-
-  const handleDelete = async () => {
-    try {
-      // mutateAsync(id);
-      // dispatch(removeItem(id));
-      handleToggleDeleteDialog();
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const handleEdit = () => {
+    dispatch(openEditEquipmentDialog(rowInfo));
+    handleCloseMenu();
+  }
 
   return (
     <>
@@ -76,13 +55,18 @@ export default function UserTableRow({
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
 
-        <TableCell component="th" scope="row" padding="none">
-          {code.toUpperCase()}
+        <TableCell
+          component="th"
+          scope="row"
+          padding="none"
+          sx={{ maxWidth: 80, textAlign: 'center' }}
+        >
+          {code}
         </TableCell>
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={image} />
+            <Avatar alt={name} src={photo} />
             <Typography variant="subtitle2" noWrap>
               {name}
             </Typography>
@@ -93,7 +77,13 @@ export default function UserTableRow({
 
         <TableCell>{formattedDate}</TableCell>
 
-        <TableCell>{serialNumber.toUpperCase()}</TableCell>
+        <TableCell>{serialNumber}</TableCell>
+
+        <TableCell>{model}</TableCell>
+
+        <TableCell>{categoryName}</TableCell>
+
+        <TableCell>{accountable}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -122,41 +112,23 @@ export default function UserTableRow({
           Download Manual
         </MenuItem>
 
-        <MenuItem onClick={handleToggleEditDialog}>
+        <MenuItem onClick={handleEdit}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
 
-        <MenuItem onClick={handleToggleDeleteDialog} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
       </Popover>
-
-      <DeleteConfirmationDialog
-        open={openDialog}
-        onClose={handleToggleDeleteDialog}
-        onConfirm={handleDelete}
-      />
-
-      <EditEquipmentDialog
-        open={openEditDialog}
-        onClose={handleToggleEditDialog}
-        onConfirm={handleDelete}
-        equipment={{ name, code, purchaseDate, serialNumber, location, id }}
-      />
     </>
   );
 }
 
-UserTableRow.propTypes = {
-  id: PropTypes.any,
-  code: PropTypes.any,
-  name: PropTypes.any,
-  location: PropTypes.any,
-  purchaseDate: PropTypes.any,
-  serialNumber: PropTypes.any,
-  image: PropTypes.any,
+EquipmentTableRow.propTypes = {
+  rowInfo: PropTypes.object,
   handleClick: PropTypes.func,
   selected: PropTypes.any,
+  employees: PropTypes.array,
 };
