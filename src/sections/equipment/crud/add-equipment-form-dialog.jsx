@@ -7,28 +7,22 @@ import {
   Stack,
   Dialog,
   Button,
-  Select,
-  MenuItem,
   TextField,
-  InputLabel,
   DialogTitle,
-  FormControl,
+  Autocomplete,
   DialogContent,
   DialogActions,
 } from '@mui/material';
 
-import { EquipmentCategory } from 'src/enums/enums';
 import { addEquipment } from 'src/features/equipment/equipmentSlice';
-// import {
-//   closeNewEquipmentDialog,
-//   selectNewEquipmentDialogOpen,
-// } from 'src/features/equipment-dialogs/dialogsSlice';
-
 import { closeDialog, selectDialogOpen } from 'src/features/dialogs/dialogsSlice';
+import { selectUiParametersByName } from 'src/features/uiparameters/uiParametersSlice';
 
 export default function AddEquipmentFormDialog() {
   const dispatch = useDispatch();
   const open = useSelector((state) => selectDialogOpen(state, 'addEquipment'));
+  const categories = useSelector((state) => selectUiParametersByName(state, 'TipoEquipo'));
+  const locations = useSelector((state) => selectUiParametersByName(state, 'Ubicacion'));
 
   const [addForm, setAddForm] = useState({
     code: '',
@@ -37,10 +31,10 @@ export default function AddEquipmentFormDialog() {
     location: '',
     purchaseDate: '',
     model: '',
-    category: EquipmentCategory.Computador,
+    category: '',
   });
 
-  const { code, serialNumber, name, location, model, purchaseDate, category } = addForm;
+  const { code, serialNumber, name, model, purchaseDate } = addForm;
 
   const handleClose = () => {
     dispatch(closeDialog({ dialogType: 'addEquipment' }));
@@ -63,7 +57,7 @@ export default function AddEquipmentFormDialog() {
       location: '',
       purchaseDate: '',
       model: '',
-      category: EquipmentCategory.Computador,
+      category: '',
     });
   };
 
@@ -103,13 +97,19 @@ export default function AddEquipmentFormDialog() {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <Autocomplete
               fullWidth
-              label="Ubicacion"
-              variant="outlined"
-              value={location}
-              onChange={handleChange}
-              name="location"
+              options={locations}
+              getOptionLabel={(option) => option}
+              renderInput={(params) => (
+                <TextField {...params} label="Ubicacion" variant="outlined" />
+              )}
+              onChange={(event, value) => {
+                setAddForm({
+                  ...addForm,
+                  location: value,
+                });
+              }}
             />
           </Grid>
           <Grid item xs={12}>
@@ -132,22 +132,20 @@ export default function AddEquipmentFormDialog() {
                 onChange={handleChange}
                 name="model"
               />
-              <FormControl fullWidth variant="outlined">
-                <InputLabel id="category">Categoria</InputLabel>
-                <Select
-                  labelId="category"
-                  id="category"
-                  label="Categoria"
-                  variant="outlined"
-                  value={category}
-                  onChange={handleChange}
-                  name="category"
-                >
-                  <MenuItem value={EquipmentCategory.Computador}>Computadora</MenuItem>
-                  <MenuItem value={EquipmentCategory.Monitor}>Monitor</MenuItem>
-                  <MenuItem value={EquipmentCategory.Impresora}>Impresora</MenuItem>
-                </Select>
-              </FormControl>
+              <Autocomplete
+                fullWidth
+                options={categories}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => (
+                  <TextField {...params} label="Categoria" variant="outlined" />
+                )}
+                onChange={(event, value) => {
+                  setAddForm({
+                    ...addForm,
+                    category: value,
+                  });
+                }}
+              />
             </Stack>
           </Grid>
         </Grid>

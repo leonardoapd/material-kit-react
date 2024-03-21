@@ -14,12 +14,7 @@ import {
   IconButton,
 } from '@mui/material';
 
-import { getCategoryFromValue } from 'src/enums/enums';
 import { openDialog } from 'src/features/dialogs/dialogsSlice';
-// import {
-//   openEditEquipmentDialog,
-//   openDeleteEquipmentDialog,
-// } from 'src/features/equipment-dialogs/dialogsSlice';
 
 import Iconify from 'src/components/iconify';
 
@@ -28,7 +23,6 @@ export default function EquipmentTableRow({ rowInfo, selected, handleClick, empl
   const [open, setOpen] = useState(null);
 
   const { id, name, code, location, purchaseDate, serialNumber, photo, model, category } = rowInfo;
-  const categoryName = getCategoryFromValue(category);
   const normalDate = new Date(purchaseDate);
   const formattedDate = normalDate.toLocaleDateString('en-GB');
   const accountable = employees.find((employee) => employee.id === rowInfo.accountableId)?.name;
@@ -67,12 +61,10 @@ export default function EquipmentTableRow({ rowInfo, selected, handleClick, empl
           {code}
         </TableCell>
 
-        <TableCell component="th" scope="row" padding="none">
+        <TableCell component="th" scope="row" padding="none" sx={{ width: 400 }}>
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src={photo} />
-            <Typography variant="subtitle2" noWrap>
-              {name}
-            </Typography>
+            <Typography variant="subtitle2">{name}</Typography>
           </Stack>
         </TableCell>
 
@@ -84,7 +76,7 @@ export default function EquipmentTableRow({ rowInfo, selected, handleClick, empl
 
         <TableCell>{model}</TableCell>
 
-        <TableCell>{categoryName}</TableCell>
+        <TableCell>{category}</TableCell>
 
         <TableCell>{accountable}</TableCell>
 

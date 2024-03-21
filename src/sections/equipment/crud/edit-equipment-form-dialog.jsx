@@ -9,70 +9,74 @@ import {
   Stack,
   Dialog,
   Button,
-  Select,
-  MenuItem,
   TextField,
-  InputLabel,
   DialogTitle,
-  FormControl,
+  Autocomplete,
   DialogContent,
   DialogActions,
 } from '@mui/material';
 
-import { EquipmentCategory } from 'src/enums/enums';
 import { editEquipment } from 'src/features/equipment/equipmentSlice';
-// import {
-//   closeEditEquipmentDialog,
-//   selectEditEquipmentDialogOpen,
-//   selectEditEquipmentDialogData,
-// } from 'src/features/equipment-dialogs/dialogsSlice';
-
+import { selectUiParametersByName } from 'src/features/uiparameters/uiParametersSlice';
 import { closeDialog, selectDialogOpen, selectDialogData } from 'src/features/dialogs/dialogsSlice';
 
 export default function EditEquipmentFormDialog({ employees }) {
   const dispatch = useDispatch();
-
-  // const open = useSelector(selectEditEquipmentDialogOpen);
   const open = useSelector((state) => selectDialogOpen(state, 'editEquipment'));
+  const categories = useSelector((state) => selectUiParametersByName(state, 'TipoEquipo'));
+  const locations = useSelector((state) => selectUiParametersByName(state, 'Ubicacion'));
+
   const [editForm, setEditForm] = useState({
     name: '',
     code: '',
     serialNumber: '',
     purchaseDate: '',
-    location: '',
+    location: null, // Set initial value to null
     model: '',
-    category: '',
+    category: null, // Set initial value to null
     description: '',
     accountableId: '',
   });
-  // const equipment = useSelector(selectEditEquipmentDialogData);
+
   const equipment = useSelector((state) => selectDialogData(state, 'editEquipment'));
+  const employeesNames = employees.map((employee) => employee.name);
 
   useEffect(() => {
     if (equipment) {
-      setEditForm(equipment);
+      setEditForm({
+        ...equipment,
+        location: equipment.location,
+        purchaseDate: equipment.purchaseDate
+          ? format(new Date(equipment.purchaseDate), 'yyyy-MM-dd')
+          : '',
+        category: equipment.category,
+        accountableId: equipment.accountableId,
+      });
     }
   }, [equipment]);
 
-  const { name, code, serialNumber, location, model, category, description, accountableId } =
+  const { name, code, serialNumber, location, model, description, accountableId, category } =
     editForm;
 
   const handleClose = () => {
-    // dispatch(closeEditEquipmentDialog());
     dispatch(closeDialog({ dialogType: 'editEquipment' }));
+    setEditForm({
+      name: '',
+      code: '',
+      serialNumber: '',
+      purchaseDate: '',
+      location: '',
+      model: '',
+      category: '',
+      description: '',
+      accountableId: '',
+    });
   };
 
   const handleChange = (event) => {
     setEditForm({
       ...editForm,
       [event.target.name]: event.target.value,
-    });
-  };
-
-  const handleSelectChange = (event) => {
-    setEditForm({
-      ...editForm,
-      category: event.target.value,
     });
   };
 
@@ -117,32 +121,38 @@ export default function EditEquipmentFormDialog({ employees }) {
                   onChange={handleChange}
                   name="name"
                 />
-                <TextField
+                <Autocomplete
                   fullWidth
                   label="Ubicacion"
-                  variant="outlined"
+                  options={locations}
+                  getOptionLabel={(option) => option}
                   value={location}
-                  onChange={handleChange}
-                  name="location"
+                  onChange={(event, value) => {
+                    setEditForm({
+                      ...editForm,
+                      location: value || '',
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Ubicacion" variant="outlined" />
+                  )}
                 />
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel id="accountableId">Responsable</InputLabel>
-                  <Select
-                    labelId="accountableId"
-                    id="accountableId"
-                    label="Responsable"
-                    variant="outlined"
-                    value={accountableId}
-                    onChange={handleChange}
-                    name="accountableId"
-                  >
-                    {employees.map((employee) => (
-                      <MenuItem key={employee.id} value={employee.id}>
-                        {employee.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <Autocomplete
+                  fullWidth
+                  label="Responsable"
+                  options={employees.map((employee) => employee.name)}
+                  getOptionLabel={(option) => option}
+                  value={employees.find((employee) => employee.id === accountableId)?.name || ''}
+                  onChange={(event, value) => {
+                    setEditForm({
+                      ...editForm,
+                      accountableId: employees[employeesNames.indexOf(value)]?.id || '',
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Responsable" variant="outlined" />
+                  )}
+                />
               </Stack>
 
               <TextField
@@ -167,9 +177,7 @@ export default function EditEquipmentFormDialog({ employees }) {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                value={
-                  editForm.purchaseDate ? format(new Date(editForm.purchaseDate), 'yyyy-MM-dd') : ''
-                }
+                value={editForm.purchaseDate || ''}
                 onChange={handleChange}
                 name="purchaseDate"
               />
@@ -181,22 +189,22 @@ export default function EditEquipmentFormDialog({ employees }) {
                 onChange={handleChange}
                 name="model"
               />
-              <FormControl fullWidth variant="outlined">
-                <InputLabel id="category">Categoria</InputLabel>
-                <Select
-                  labelId="category"
-                  id="category"
-                  label="Categoria"
-                  variant="outlined"
-                  value={category}
-                  onChange={handleSelectChange}
-                  name="category"
-                >
-                  <MenuItem value={EquipmentCategory.Computador}>Computadora</MenuItem>
-                  <MenuItem value={EquipmentCategory.Monitor}>Monitor</MenuItem>
-                  <MenuItem value={EquipmentCategory.Impresora}>Impresora</MenuItem>
-                </Select>
-              </FormControl>
+              <Autocomplete
+                fullWidth
+                label="Categoria"
+                options={categories}
+                getOptionLabel={(option) => option}
+                value={category}
+                onChange={(event, value) => {
+                  setEditForm({
+                    ...editForm,
+                    category: value || '',
+                  });
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Categoria" variant="outlined" />
+                )}
+              />
             </Stack>
           </Grid>
         </Grid>

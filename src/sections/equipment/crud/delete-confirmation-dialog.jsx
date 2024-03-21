@@ -11,12 +11,6 @@ import {
 } from '@mui/material';
 
 import { removeEquipment } from 'src/features/equipment/equipmentSlice';
-// import {
-//   closeDeleteEquipmentDialog,
-//   selectDeleteEquipmentDialogOpen,
-//   selectDeleteEquipmentDialogData,
-// } from 'src/features/equipment-dialogs/dialogsSlice';
-
 import { closeDialog, selectDialogOpen, selectDialogData } from 'src/features/dialogs/dialogsSlice';
 
 export default function DeleteConfirmationDialog() {

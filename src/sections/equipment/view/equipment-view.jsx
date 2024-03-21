@@ -12,7 +12,6 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-// import { openNewEquipmentDialog } from 'src/features/equipment-dialogs/dialogsSlice';
 import { openDialog } from 'src/features/dialogs/dialogsSlice';
 // import { data } from 'src/_mock/inventory';
 import {
@@ -30,6 +29,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import Loader from 'src/components/loader/loader';
 
+// import './equipment-view.css';
 import TableNoData from '../table-no-data';
 import TableEmptyRows from '../table-empty-rows';
 import EquipmentTableRow from '../equipment-table-row';
@@ -228,10 +228,7 @@ export default function EquipmentView() {
 
       <AddEquipmentDialog />
 
-      <AddMaintenanceDialog
-        inventory={data}
-        selected={rowSelected}
-      />
+      <AddMaintenanceDialog inventory={data} selected={rowSelected} />
 
       <DeleteConfirmationDialog />
 
