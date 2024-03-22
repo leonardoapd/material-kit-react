@@ -31,9 +31,9 @@ export default function EditEquipmentFormDialog({ employees }) {
     code: '',
     serialNumber: '',
     purchaseDate: '',
-    location: null, // Set initial value to null
+    location: null, 
     model: '',
-    category: null, // Set initial value to null
+    category: null, 
     description: '',
     accountableId: '',
   });

@@ -1,70 +1,220 @@
 import moment from 'moment';
 import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import { useDispatch, useSelector } from 'react-redux';
+import allLocales from '@fullcalendar/core/locales-all';
+import interactionPlugin from '@fullcalendar/interaction';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
+// import { Calendar, momentLocalizer } from 'react-big-calendar';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
 import CardHeader from '@mui/material/CardHeader';
 
-import { generateEvents } from 'src/utils/format-events';
+import { openDialog } from 'src/features/dialogs/dialogsSlice';
+
+import './maintenance-calendar-events.css';
+import ShowMaintenanceTaskDialog from './crud/show-maintenance-form-dialog';
+// import {
+//   fetchMaintenanceTasks,
+//   selectMaintenanceTasks,
+//   selectMaintenanceTaskStatus,
+// } from '../../features/maintenance/maintenanceTaskSlice';
 
 // ----------------------------------------------------------------------
 
-export default function MaintenanceCalendarEvents({ title, subheader, ...other }) {
+export default function MaintenanceCalendarEvents({
+  title,
+  subheader,
+  maintenanceTasks,
+  onMonthChange,
+  ...other
+}) {
+  const dispatch = useDispatch();
+
+  const [anchorEl, setAnchorEl] = useState(null);
+
   const locale = 'es';
-  const localizer = momentLocalizer(moment);
   moment.locale(locale);
 
-  const maintenance = {
-    id: '1',
-    equipment: 'Deformadora',
-    type: 'Correctivo',
-    description: 'Se debe cambiar el motor',
-    date: '2024-03-11T10:00:00',
-    frequency: 180,
-    status: 'Pendiente',
-    duration: 60 * 48,
+
+  const events = maintenanceTasks.map((event) => {
+    let color;
+    switch (event.status) {
+      case 'Pendiente':
+        color = 'red';
+        break;
+      case 'En Progreso':
+        color = 'yellow';
+        break;
+      case 'Ejecutado':
+        color = 'green';
+        break;
+      case 'Cancelado':
+        color = 'gray';
+        break;
+      case 'Reprogramado':
+        color = 'orange';
+        break;
+      default:
+        color = 'blue';
+        break;
+    }
+
+    return {
+      id: event.id,
+      title: event.title,
+      start: new Date(event.startDate),
+      end: new Date(event.endDate),
+      taskCode: event.taskCode,
+      completed: event.completedDate,
+      status: event.status,
+      nextMaintenance: new Date(event.nextMaintenanceTaskDate),
+      maintenanceId: event.maintenanceId,
+      color,
+    };
+  });
+
+  const eventColor = (eventoInfo) => {
+    switch (eventoInfo.event.extendedProps.status) {
+      case 'Pendiente':
+        return 'red';
+
+      case 'En Progreso':
+        return 'yellow';
+
+      case 'Ejecutado':
+        return 'green';
+
+      case 'Cancelado':
+        return 'gray';
+
+      case 'Reprogramado':
+        return 'orange';
+
+      default:
+        return 'blue';
+    }
+  };
+  const eventContent = (info) => {
+    const backgroundColor = (() => {
+      switch (info.event.extendedProps.status) {
+        case 'Pendiente':
+          return 'red';
+
+        case 'En Progreso':
+          return 'yellow';
+
+        case 'Ejecutado':
+          return 'green';
+
+        case 'Cancelado':
+          return 'gray';
+
+        default:
+          return 'blue';
+      }
+    })();
+
+    return (
+      <Chip
+        label={`${info.timeText} | ${info.event.title}`}
+        sx={{ backgroundColor, borderColor: backgroundColor, color: 'white' }}
+      />
+    );
   };
 
-  const events = generateEvents(maintenance);
+  // const handleDateSelect = (selectInfo) => {
+  //   // console.log(selectInfo);
+  // };
+
+  const handleEventClick = (clickInfo) => {
+    // console.log(clickInfo);
+    setAnchorEl(clickInfo.jsEvent.target);
+    dispatch(openDialog({ dialogType: 'showMaintenanceTask', data: clickInfo.event.id }));
+  };
+
+  const handleEvents = (eventos) => {
+    // console.log(eventos);
+  };
+
+  const handleTitleChange = (info) => {
+    const monthNames = [
+      'enero',
+      'febrero',
+      'marzo',
+      'abril',
+      'mayo',
+      'junio',
+      'julio',
+      'agosto',
+      'septiembre',
+      'octubre',
+      'noviembre',
+      'diciembre',
+    ];
+    const [monthName, year] = info.view.title.split(' de '); // Dividimos el título en mes y año
+    const monthNumber = monthNames.findIndex(
+      (name) => name.toLowerCase() === monthName.toLowerCase()
+    );
+    console.log(`El calendario está mostrando el mes: ${monthNumber} y el año: ${year}`);
+    const yearNumber = parseInt(year, 10);
+    onMonthChange(monthNumber, yearNumber);
+  };
+
   return (
-    <Card {...other}>
-      <CardHeader title={title} subheader={subheader} />
-      <Box sx={{ p: 3 }}>
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          views={['month', 'week', 'day', 'agenda']}
-          style={{
-            height: '400px',
-          }}
-          //   borderRadius: '16px',
-          //   backgroundColor: '#FFFFFF',
-          //   boxShadow:
-          //     '0 0 2px 0 rgba(145, 158, 171, 0.08), 0 12px 24px -4px rgba(145, 158, 171, 0.08)',
-          //   padding: '24px',
-          //   fontSize: '12px',
-          // }}
-          onSelectEvent={(event) => console.log(event)}
-          messages={{
-            next: 'Siguiente',
-            previous: 'Anterior',
-            today: 'Hoy',
-            month: 'Mes',
-            week: 'Semana',
-            day: 'Día',
-            agenda: 'Agenda',
-          }}
-        />
-      </Box>
-    </Card>
+    <>
+      <Card {...other}>
+        <CardHeader title={title} subheader={subheader} />
+        <Box sx={{ p: 3, flexGrow: 1 }}>
+          <FullCalendar
+            locales={allLocales}
+            locale="es"
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            headerToolbar={{
+              left: 'prev,today,next',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,timeGridDay',
+            }}
+            initialView="dayGridMonth"
+            editable
+            selectable
+            selectMirror
+            dayMaxEvents
+            weekends
+            events={events}
+            eventColor={eventColor}
+            // height="480px"
+            datesSet={handleTitleChange}
+            titleFormat={{
+              month: 'long',
+              year: 'numeric',
+            }}
+            // select={handleDateSelect}
+            eventContent={eventContent} // custom render function
+            eventClick={handleEventClick}
+            eventsSet={handleEvents} // called after events are initialized/added/changed/removed
+            /* you can update a remote database when these fire:
+          eventAdd={function(){}}
+          eventChange={function(){}}
+          eventRemove={function(){}}
+          */
+          />
+        </Box>
+      </Card>
+
+      <ShowMaintenanceTaskDialog anchorEl={anchorEl} />
+    </>
   );
 }
 
 MaintenanceCalendarEvents.propTypes = {
   title: PropTypes.string,
   subheader: PropTypes.string,
+  maintenanceTasks: PropTypes.array,
+  onMonthChange: PropTypes.func,
 };

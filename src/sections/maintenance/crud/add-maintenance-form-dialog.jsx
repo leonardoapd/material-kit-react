@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -19,11 +20,14 @@ import {
   DialogActions,
 } from '@mui/material';
 
+import { addMaintenance } from 'src/features/maintenance/maintenanceSlice';
 import { closeDialog, selectDialogOpen } from 'src/features/dialogs/dialogsSlice';
 import { selectUiParametersByName } from 'src/features/uiparameters/uiParametersSlice';
+import { fetchMaintenanceTasks } from 'src/features/maintenance/maintenanceTaskSlice';
 
 export default function AddMaintenanceDialog({ selected, inventory }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const open = useSelector((state) => selectDialogOpen(state, 'addMaintenance'));
   const maintenanceTypes = useSelector((state) =>
     selectUiParametersByName(state, 'TipoMantenimiento')
@@ -31,11 +35,11 @@ export default function AddMaintenanceDialog({ selected, inventory }) {
 
   const [addForm, setAddForm] = useState({
     equipmentId: '',
-    maintenanceType: '',
+    type: '',
     description: '',
-    maintenanceDate: '',
-    maintenanceFrequency: '',
-    maintenanceDuration: 0,
+    firstMaintenanceTaskDate: '',
+    frequency: '',
+    estimatedDuration: 0,
   });
 
   const { id } = selected;
@@ -50,14 +54,8 @@ export default function AddMaintenanceDialog({ selected, inventory }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, selected]);
 
-  const {
-    equipmentId,
-    maintenanceType,
-    description,
-    maintenanceDate,
-    maintenanceFrequency,
-    maintenanceDuration,
-  } = addForm;
+  const { equipmentId, type, description, firstMaintenanceTaskDate, frequency, estimatedDuration } =
+    addForm;
 
   const handleChange = (event) => {
     setAddForm({
@@ -66,19 +64,23 @@ export default function AddMaintenanceDialog({ selected, inventory }) {
     });
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     console.log(addForm);
+    await dispatch(addMaintenance(addForm));
+    handleClose();
+    dispatch(fetchMaintenanceTasks());
+    navigate('/maintenance');
   };
 
   const handleClose = () => {
     setAddForm((prev) => ({
       ...prev,
       equipmentId: id,
-      maintenanceType: '',
+      type: '',
       description: '',
-      maintenanceDate: '',
-      maintenanceFrequency: '',
-      maintenanceDuration: 0,
+      firstMaintenanceTaskDate: '',
+      frequency: '',
+      estimatedDuration: 0,
     }));
     dispatch(closeDialog({ dialogType: 'addMaintenance' }));
   };
@@ -110,14 +112,14 @@ export default function AddMaintenanceDialog({ selected, inventory }) {
                   id="maintenance-type"
                   label="Tipo de Mantenimiento"
                   variant="outlined"
-                  value={maintenanceType}
+                  value={type}
                   onChange={handleChange}
-                  name="maintenanceType"
+                  name="type"
                   fullWidth
                 >
-                  {maintenanceTypes.map((type, index) => (
-                    <MenuItem key={index} value={type}>
-                      {type}
+                  {maintenanceTypes.map((name, index) => (
+                    <MenuItem key={index} value={name}>
+                      {name}
                     </MenuItem>
                   ))}
                 </Select>
@@ -145,9 +147,9 @@ export default function AddMaintenanceDialog({ selected, inventory }) {
                 variant="outlined"
                 type="date"
                 InputLabelProps={{ shrink: true }}
-                value={maintenanceDate}
+                value={firstMaintenanceTaskDate}
                 onChange={handleChange}
-                name="maintenanceDate"
+                name="firstMaintenanceTaskDate"
               />
               <FormControl fullWidth>
                 <InputLabel id="maintenance-frequency">Frecuencia de Mantenimiento</InputLabel>
@@ -156,9 +158,9 @@ export default function AddMaintenanceDialog({ selected, inventory }) {
                   id="maintenance-frequency"
                   label="Frecuencia de Mantenimiento"
                   variant="outlined"
-                  value={maintenanceFrequency}
+                  value={frequency}
                   onChange={handleChange}
-                  name="maintenanceFrequency"
+                  name="frequency"
                   fullWidth
                 >
                   <MenuItem value={7}>Semanal</MenuItem>
@@ -177,8 +179,8 @@ export default function AddMaintenanceDialog({ selected, inventory }) {
                 type="number"
                 placeholder="Horas"
                 onChange={handleChange}
-                name="maintenanceDuration"
-                value={maintenanceDuration}
+                name="estimatedDuration"
+                value={estimatedDuration}
               />
             </Stack>
           </Grid>

@@ -11,22 +11,22 @@ export default function MaintenanceEfficiency({ title, subheader, chart, ...othe
   const { percent } = chart;
 
   return (
-    <Card {...other}>
+    <Card {...other} sx={{ height: '100%' }}>
       <CardHeader title={title} subheader={subheader} />
 
       <Box sx={{ p: 3, pb: 1 }}>
-      <GaugeChart
-            id="gauge-chart5"
-            nrOfLevels={420}
-            arcsLength={[0.6, 0.2, 0.2]}
-            colors={['#EA4228', '#F5CD19', '#5BE12C']}
-            percent={percent}
-            arcPadding={0.02}
-            textColor="black"
-            animate
-            cornerRadius={6} 
-            needleColor="#345243" 
-          />
+        <GaugeChart
+          id="gauge-chart5"
+          nrOfLevels={420}
+          arcsLength={[0.6, 0.2, 0.2]}
+          colors={['#EA4228', '#F5CD19', '#5BE12C']}
+          percent={percent}
+          arcPadding={0.02}
+          textColor="black"
+          animate
+          cornerRadius={6}
+          needleColor="#345243"
+        />
       </Box>
     </Card>
   );
