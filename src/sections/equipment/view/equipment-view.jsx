@@ -6,8 +6,10 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
+import TableRow from '@mui/material/TableRow';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
@@ -130,14 +132,8 @@ export default function EquipmentView() {
   };
 
   if (status === 'loading') return <Loader />;
-  if (status === 'failed')
-    return (
-      <Container sx={{ mt: 3, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Typography variant="h4">Error al cargar los datos</Typography>
-      </Container>
-    );
 
-  if (data.length === 0) return <div>No hay datos de equipo</div>;
+  // if (data.length === 0) return <div>No hay datos de equipo</div>;
 
   const dataFiltered = applyFilter({
     inputData: data,
@@ -207,6 +203,39 @@ export default function EquipmentView() {
                     );
                   })}
 
+                {status === 'failed' && (
+                  <TableRow>
+                    <TableCell colSpan={9}>
+                      <Container
+                        sx={{
+                          mt: 3,
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Typography variant="h4">Error al cargar los datos</Typography>
+                      </Container>
+                    </TableCell>
+                  </TableRow>
+                )}
+
+                  {dataFiltered.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={9}>
+                        <Container
+                          sx={{
+                            mt: 3,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Typography variant="h4">No se encontraron resultados</Typography>
+                        </Container>
+                      </TableCell>
+                    </TableRow>
+                  )}
                 <TableEmptyRows height={77} emptyRows={emptyRows(page, rowsPerPage, data.length)} />
 
                 {notFound && <TableNoData query={filterName} />}
