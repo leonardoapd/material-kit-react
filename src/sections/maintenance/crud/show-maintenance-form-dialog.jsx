@@ -10,12 +10,12 @@ import {
   Stack,
   Button,
   Popper,
+  Select,
+  MenuItem,
   CardHeader,
   Typography,
-  Select,
-  FormControl,
-  MenuItem,
   InputLabel,
+  FormControl,
 } from '@mui/material';
 
 import { selectMaintenance } from 'src/features/maintenance/maintenanceSlice';
@@ -33,8 +33,6 @@ export default function ShowMaintenanceTaskDialog({ anchorEl }) {
   const maintenances = useSelector(selectMaintenance);
 
   const [task, setTask] = useState(null);
-
-  console.log(anchorEl);
 
   useEffect(() => {
     if (data) {

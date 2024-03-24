@@ -1,15 +1,9 @@
-import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect, useCallback } from 'react';
 
-import { Button } from '@mui/material';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import {
   fetchMaintenanceTasks,
@@ -38,44 +32,45 @@ export default function MaintenanceView() {
     }
   }, [status, dispatch]);
 
-  
+  const getEfficiency = useCallback(
+    (monthNumber, yearNumber) => {
+      setMonth(monthNumber);
+      setYear(yearNumber);
 
-  const getEfficiency = useCallback((monthNumber, yearNumber) => {
-    setMonth(monthNumber);
-    setYear(yearNumber);
+      const monthlyTasks = maintenanceTasks.filter(
+        (task) =>
+          new Date(task.startDate).getMonth() === monthNumber &&
+          new Date(task.startDate).getFullYear() === yearNumber
+      );
 
-    const monthlyTasks = maintenanceTasks.filter(
-      (task) =>
-        new Date(task.startDate).getMonth() === monthNumber &&
-        new Date(task.startDate).getFullYear() === yearNumber
-    );
+      const statusCounts = monthlyTasks.reduce(
+        (counts, task) => {
+          counts[task.status] = (counts[task.status] || 0) + 1;
+          return counts;
+        },
+        {
+          Pendiente: 0,
+          'En Progreso': 0,
+          Ejecutado: 0,
+          Cancelado: 0,
+          Reprogramado: 0,
+        }
+      );
 
-    const statusCounts = monthlyTasks.reduce(
-      (counts, task) => {
-        counts[task.status] = (counts[task.status] || 0) + 1;
-        return counts;
-      },
-      {
-        Pendiente: 0,
-        'En Progreso': 0,
-        Ejecutado: 0,
-        Cancelado: 0,
-        Reprogramado: 0,
-      }
-    );
+      const ejecutadoCount = statusCounts.Ejecutado || 0;
+      const canceladoCount = statusCounts.Cancelado || 0;
+      const reprogramadoCount = statusCounts.Reprogramado || 0;
 
-    const ejecutadoCount = statusCounts.Ejecutado || 0;
-    const canceladoCount = statusCounts.Cancelado || 0;
-    const reprogramadoCount = statusCounts.Reprogramado || 0;
+      const cumplimiento = (ejecutadoCount / (ejecutadoCount + canceladoCount)) * 100 || 0;
+      const efectividad = (ejecutadoCount / (ejecutadoCount + reprogramadoCount)) * 100 || 0;
 
-    const cumplimiento = (ejecutadoCount / (ejecutadoCount + canceladoCount)) * 100 || 0;
-    const efectividad = (ejecutadoCount / (ejecutadoCount + reprogramadoCount)) * 100 || 0;
-
-    setPercentage({
-      cumplimiento: cumplimiento.toFixed(2),
-      efectividad: efectividad.toFixed(2),
-    });
-  }, [maintenanceTasks]);
+      setPercentage({
+        cumplimiento: cumplimiento.toFixed(2),
+        efectividad: efectividad.toFixed(2),
+      });
+    },
+    [maintenanceTasks]
+  );
 
   useEffect(() => {
     getEfficiency(month, year);

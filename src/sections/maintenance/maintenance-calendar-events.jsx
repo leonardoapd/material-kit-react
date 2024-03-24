@@ -1,10 +1,10 @@
 import moment from 'moment';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import { useDispatch, useSelector } from 'react-redux';
 import allLocales from '@fullcalendar/core/locales-all';
 import interactionPlugin from '@fullcalendar/interaction';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -142,6 +142,7 @@ export default function MaintenanceCalendarEvents({
     // console.log(eventos);
   };
 
+  // TODO: Mejorar la forma en que se obtiene el mes y año
   const handleTitleChange = (info) => {
     const monthNames = [
       'enero',
@@ -161,7 +162,6 @@ export default function MaintenanceCalendarEvents({
     const monthNumber = monthNames.findIndex(
       (name) => name.toLowerCase() === monthName.toLowerCase()
     );
-    console.log(`El calendario está mostrando el mes: ${monthNumber} y el año: ${year}`);
     const yearNumber = parseInt(year, 10);
     onMonthChange(monthNumber, yearNumber);
   };

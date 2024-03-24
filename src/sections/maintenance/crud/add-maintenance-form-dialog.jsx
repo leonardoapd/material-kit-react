@@ -22,8 +22,8 @@ import {
 
 import { addMaintenance } from 'src/features/maintenance/maintenanceSlice';
 import { closeDialog, selectDialogOpen } from 'src/features/dialogs/dialogsSlice';
-import { selectUiParametersByName } from 'src/features/uiparameters/uiParametersSlice';
 import { fetchMaintenanceTasks } from 'src/features/maintenance/maintenanceTaskSlice';
+import { selectUiParametersByName } from 'src/features/uiparameters/uiParametersSlice';
 
 export default function AddMaintenanceDialog({ selected, inventory }) {
   const dispatch = useDispatch();
@@ -127,60 +127,60 @@ export default function AddMaintenanceDialog({ selected, inventory }) {
             </Stack>
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Descripcion"
-              variant="outlined"
-              placeholder="Escriba la descripcion del mantenimiento"
-              multiline
-              rows={4}
-              value={description}
-              onChange={handleChange}
-              name="description"
-            />
-          </Grid>
-          <Grid item xs={12}>
             <Stack direction="row" spacing={2}>
-              <TextField
-                fullWidth
-                label="Fecha de Mantenimiento"
-                variant="outlined"
-                type="date"
-                InputLabelProps={{ shrink: true }}
-                value={firstMaintenanceTaskDate}
-                onChange={handleChange}
-                name="firstMaintenanceTaskDate"
-              />
-              <FormControl fullWidth>
-                <InputLabel id="maintenance-frequency">Frecuencia de Mantenimiento</InputLabel>
-                <Select
-                  labelId="maintenance-frequency"
-                  id="maintenance-frequency"
-                  label="Frecuencia de Mantenimiento"
-                  variant="outlined"
-                  value={frequency}
-                  onChange={handleChange}
-                  name="frequency"
+              <Stack direction="column" spacing={2} sx={{ width: '100%' }}>
+                <TextField
                   fullWidth
-                >
-                  <MenuItem value={7}>Semanal</MenuItem>
-                  <MenuItem value={15}>Quincenal</MenuItem>
-                  <MenuItem value={30}>Mensual</MenuItem>
-                  <MenuItem value={60}>Bimestral</MenuItem>
-                  <MenuItem value={90}>Trimestral</MenuItem>
-                  <MenuItem value={180}>Semestral</MenuItem>
-                  <MenuItem value={360}>Anual</MenuItem>
-                </Select>
-              </FormControl>
+                  label="Fecha de Mantenimiento"
+                  variant="outlined"
+                  type="datetime-local"
+                  InputLabelProps={{ shrink: true }}
+                  value={firstMaintenanceTaskDate}
+                  onChange={handleChange}
+                  name="firstMaintenanceTaskDate"
+                />
+                <FormControl fullWidth>
+                  <InputLabel id="maintenance-frequency">Frecuencia de Mantenimiento</InputLabel>
+                  <Select
+                    labelId="maintenance-frequency"
+                    id="maintenance-frequency"
+                    label="Frecuencia de Mantenimiento"
+                    variant="outlined"
+                    value={frequency}
+                    onChange={handleChange}
+                    name="frequency"
+                    fullWidth
+                  >
+                    <MenuItem value={7}>Semanal</MenuItem>
+                    <MenuItem value={15}>Quincenal</MenuItem>
+                    <MenuItem value={30}>Mensual</MenuItem>
+                    <MenuItem value={60}>Bimestral</MenuItem>
+                    <MenuItem value={90}>Trimestral</MenuItem>
+                    <MenuItem value={180}>Semestral</MenuItem>
+                    <MenuItem value={360}>Anual</MenuItem>
+                  </Select>
+                </FormControl>
+                <TextField
+                  fullWidth
+                  label="Duracion del Mantenimiento"
+                  variant="outlined"
+                  type="number"
+                  placeholder="Horas"
+                  onChange={handleChange}
+                  name="estimatedDuration"
+                  value={estimatedDuration}
+                />
+              </Stack>
               <TextField
                 fullWidth
-                label="Duracion del Mantenimiento"
+                label="Descripcion"
                 variant="outlined"
-                type="number"
-                placeholder="Horas"
+                placeholder="Escriba la descripcion del mantenimiento"
+                multiline
+                value={description}
                 onChange={handleChange}
-                name="estimatedDuration"
-                value={estimatedDuration}
+                name="description"
+                rows={7.2}
               />
             </Stack>
           </Grid>
