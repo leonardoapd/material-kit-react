@@ -45,6 +45,11 @@ export default function EquipmentTableRow({ rowInfo, selected, handleClick, empl
     handleCloseMenu();
   };
 
+  const handleShowInfo = () => {
+    dispatch(openDialog({ dialogType: 'showEquipmentInfo', data: rowInfo }));
+    handleCloseMenu();
+  };
+
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -97,7 +102,7 @@ export default function EquipmentTableRow({ rowInfo, selected, handleClick, empl
           sx: { width: 240 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu}>
+        <MenuItem onClick={handleShowInfo}>
           <Iconify icon="eva:eye-fill" sx={{ mr: 2 }} />
           View Resume
         </MenuItem>

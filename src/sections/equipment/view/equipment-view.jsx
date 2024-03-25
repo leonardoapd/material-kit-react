@@ -40,6 +40,7 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 import AddEquipmentDialog from '../crud/add-equipment-form-dialog';
 import EditEquipmentDialog from '../crud/edit-equipment-form-dialog';
 import EquipmentTableRowSkeleton from '../equipment-table-row-skeleton';
+import ShowEquipmentInfoDialog from '../crud/show-equipment-info-dialog';
 import DeleteConfirmationDialog from '../crud/delete-confirmation-dialog';
 import AddMaintenanceDialog from '../../maintenance/crud/add-maintenance-form-dialog';
 
@@ -249,6 +250,8 @@ export default function EquipmentView() {
       <DeleteConfirmationDialog />
 
       <EditEquipmentDialog employees={employees} />
+
+      <ShowEquipmentInfoDialog />
     </Container>
   );
 }
