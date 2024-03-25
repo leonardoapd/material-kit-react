@@ -29,7 +29,6 @@ import {
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import Loader from 'src/components/loader/loader';
 
 // import './equipment-view.css';
 import TableNoData from '../table-no-data';
@@ -40,6 +39,7 @@ import EquipmentTableToolbar from '../equipment-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 import AddEquipmentDialog from '../crud/add-equipment-form-dialog';
 import EditEquipmentDialog from '../crud/edit-equipment-form-dialog';
+import EquipmentTableRowSkeleton from '../equipment-table-row-skeleton';
 import DeleteConfirmationDialog from '../crud/delete-confirmation-dialog';
 import AddMaintenanceDialog from '../../maintenance/crud/add-maintenance-form-dialog';
 
@@ -131,10 +131,6 @@ export default function EquipmentView() {
     dispatch(openDialog({ dialogType: 'addEquipment' }));
   };
 
-  if (status === 'loading') return <Loader />;
-
-  // if (data.length === 0) return <div>No hay datos de equipo</div>;
-
   const dataFiltered = applyFilter({
     inputData: data,
     comparator: getComparator(order, orderBy),
@@ -187,21 +183,28 @@ export default function EquipmentView() {
                   { id: '' },
                 ]}
               />
+
               <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((rowInfo) => {
-                    const { id, name } = rowInfo;
-                    return (
-                      <EquipmentTableRow
-                        key={id}
-                        rowInfo={rowInfo}
-                        employees={employees}
-                        selected={selected.indexOf(name) !== -1}
-                        handleClick={(event) => handleClick(event, rowInfo)}
-                      />
-                    );
-                  })}
+                {status === 'loading' // Verifica si los datos están cargando
+                  ? // Renderiza el Skeleton para simular las celdas mientras se cargan los datos
+                    Array.from(Array(rowsPerPage).keys()).map((index) => (
+                      <EquipmentTableRowSkeleton key={index} />
+                    ))
+                  : // Renderiza los datos normales si no están cargando
+                    dataFiltered
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((rowInfo) => {
+                        const { id, name } = rowInfo;
+                        return (
+                          <EquipmentTableRow
+                            key={id}
+                            rowInfo={rowInfo}
+                            employees={employees}
+                            selected={selected.indexOf(name) !== -1}
+                            handleClick={(event) => handleClick(event, rowInfo)}
+                          />
+                        );
+                      })}
 
                 {status === 'failed' && (
                   <TableRow>
@@ -220,22 +223,6 @@ export default function EquipmentView() {
                   </TableRow>
                 )}
 
-                  {dataFiltered.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={9}>
-                        <Container
-                          sx={{
-                            mt: 3,
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <Typography variant="h4">No se encontraron resultados</Typography>
-                        </Container>
-                      </TableCell>
-                    </TableRow>
-                  )}
                 <TableEmptyRows height={77} emptyRows={emptyRows(page, rowsPerPage, data.length)} />
 
                 {notFound && <TableNoData query={filterName} />}
