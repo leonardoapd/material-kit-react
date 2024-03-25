@@ -49,7 +49,6 @@ function ShowEquipmentInfoDialog() {
     info;
 
   const purchaseDateFormatted = new Date(purchaseDate).toLocaleDateString('en-GB');
-  
 
   const handleClose = () => {
     dispatch(closeDialog({ dialogType: 'showEquipmentInfo' }));
@@ -103,24 +102,36 @@ function ShowEquipmentInfoDialog() {
     <Dialog open={open} onClose={handleClose}>
       <Card sx={{ position: 'relative', maxWidth: 485 }}>
         <CardMedia component="img" image={photo} alt={name} height="200" />
-        <Tooltip title={code ? 'Mostrar QR' : 'Generar código QR'}>
-          <Button
-            sx={{
-              position: 'absolute',
-              top: '8px',
-              right: '8px',
-              zIndex: 1,
-              backgroundColor: 'transparent',
-              borderRadius: '50%',
-              padding: '8px',
-            }}
-            onClick={handleGenerateQR}
-          >
-            <Avatar sx={{ width: 40, height: 40 }}>
-              <Iconify icon="bi:qr-code" />
-            </Avatar>
-          </Button>
-        </Tooltip>
+        <Stack direction="row"  sx={{ position: 'absolute', top: '8px', right: '8px' }}>
+          <Tooltip title={code ? 'Mostrar QR' : 'Generar código QR'}>
+            <Button
+              sx={{
+                backgroundColor: 'transparent',
+                borderRadius: '50%',
+                padding: '8px',
+              }}
+              onClick={handleGenerateQR}
+            >
+              <Avatar sx={{ width: 40, height: 40 }}>
+                <Iconify icon="bi:qr-code" />
+              </Avatar>
+            </Button>
+          </Tooltip>
+          <Tooltip title="Imprimir Hoja de Vida">
+            <Button
+              sx={{
+                backgroundColor: 'transparent',
+                borderRadius: '50%',
+                padding: '8px',
+              }}
+            //   onClick={handlePrint}
+            >
+              <Avatar sx={{ width: 40, height: 40 }}>
+                <Iconify icon="bi:printer" />
+              </Avatar>
+            </Button>
+          </Tooltip>
+        </Stack>
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             {name}
@@ -155,12 +166,15 @@ function ShowEquipmentInfoDialog() {
               <Typography variant="body2" color="text.secondary">
                 <strong>Fecha de compra:</strong> {purchaseDateFormatted}
               </Typography>
+              <Typography variant="body2" color="text.secondary">
+                <strong>Próximo Mantenimiento:</strong> {purchaseDateFormatted}
+              </Typography>
             </Stack>
           </Stack>
         </CardContent>
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          {/* <Button size="small">Editar</Button>
-          <Button size="small">Eliminar</Button> */}
+          {/* <Button size="small">Editar</Button> */}
+          <Button size="small">Ver Detalles de Maintenimientos</Button>
         </CardActions>
       </Card>
     </Dialog>

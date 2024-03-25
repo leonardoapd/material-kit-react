@@ -147,7 +147,7 @@ export default function EquipmentView() {
 
         <Button
           variant="contained"
-          color="primary"
+          color="success"
           startIcon={<Iconify icon="eva:plus-fill" />}
           onClick={handleOpenAddEquipmentDialog}
         >

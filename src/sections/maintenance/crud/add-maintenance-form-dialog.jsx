@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Grid,
   Stack,
@@ -187,12 +186,12 @@ export default function AddMaintenanceDialog({ selected, inventory }) {
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} variant="outlined" color="error">
+        <Button onClick={handleClose} color="error" size="small">
           Cancelar
         </Button>
-        <LoadingButton onClick={handleConfirm} variant="contained" color="primary" loading={false}>
+        <Button onClick={handleConfirm} color="success" size="small" autoFocus>
           Programar
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

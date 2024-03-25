@@ -41,10 +41,10 @@ export default function DeleteConfirmationDialog() {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} variant="outlined">
+        <Button onClick={handleClose} size="small" color="info">
           No, cancelar
         </Button>
-        <Button onClick={handleConfirm} variant="contained" autoFocus color="error">
+        <Button onClick={handleConfirm} size="small" autoFocus color="error">
           Si, eliminar
         </Button>
       </DialogActions>

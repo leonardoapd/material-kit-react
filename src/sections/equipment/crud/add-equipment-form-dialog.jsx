@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Grid,
   Stack,
@@ -151,18 +150,19 @@ export default function AddEquipmentFormDialog() {
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} variant="outlined" color="error">
+        <Button onClick={handleClose} color="error" size="small">
           Cancelar
         </Button>
-        <LoadingButton
+        <Button
           onClick={handleConfirm}
-          variant="contained"
+          // variant="contained"
+          size="small"
           autoFocus
           color="success"
           loading={false}
         >
-          Añadir
-        </LoadingButton>
+          Guardar
+        </Button>
       </DialogActions>
     </Dialog>
   );

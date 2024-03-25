@@ -31,9 +31,9 @@ export default function EditEquipmentFormDialog({ employees }) {
     code: '',
     serialNumber: '',
     purchaseDate: '',
-    location: null, 
+    location: null,
     model: '',
-    category: null, 
+    category: null,
     description: '',
     accountableId: '',
   });
@@ -210,17 +210,11 @@ export default function EditEquipmentFormDialog({ employees }) {
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} variant="outlined" color="error">
+        <Button onClick={handleClose} color="error" size="small">
           Cancelar
         </Button>
-        <LoadingButton
-          onClick={handleConfirm}
-          variant="contained"
-          autoFocus
-          color="success"
-          loading={false}
-        >
-          Editar
+        <LoadingButton onClick={handleConfirm} size="small" autoFocus color="success">
+          Guardar
         </LoadingButton>
       </DialogActions>
     </Dialog>
