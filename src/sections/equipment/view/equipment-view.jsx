@@ -245,7 +245,7 @@ export default function EquipmentView() {
 
       <AddEquipmentDialog />
 
-      <AddMaintenanceDialog inventory={data} selected={rowSelected} />
+      <AddMaintenanceDialog selected={rowSelected} />
 
       <DeleteConfirmationDialog />
 

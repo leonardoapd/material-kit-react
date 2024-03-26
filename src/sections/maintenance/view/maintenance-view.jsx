@@ -2,15 +2,9 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { DataGrid } from '@mui/x-data-grid';
-import {
-  Card,
-  Stack,
-  Button,
-  Container,
-  Typography,
-  TableContainer,
-} from '@mui/material';
+import { Card, Stack, Button, Container, Typography, TableContainer } from '@mui/material';
 
+import { openDialog } from 'src/features/dialogs/dialogsSlice';
 import {
   fetchEquipment,
   selectEquipment,
@@ -28,6 +22,9 @@ import LoadingSkeleton from 'src/components/loading-skeleton';
 
 import MaintenanceActionMenu from '../maintenance-action-menu';
 import MaintenanceTableToolbar from '../maintenance-table-toolbar';
+import AddMaintenanceDialog from '../crud/add-maintenance-form-dialog';
+
+// ----------------------------------------------------------------------
 
 const columns = [
   { field: 'type', headerName: 'Tipo', width: 140 },
@@ -53,6 +50,8 @@ export default function MaintenanceView() {
   const equipment = useSelector(selectEquipment);
   const equipmentStatus = useSelector(selectEquipmentStatus);
 
+  // ---------------------- Effects ---------------------- //
+
   useEffect(() => {
     if (status === 'idle') {
       dispatch(fetchMaintenance());
@@ -65,6 +64,8 @@ export default function MaintenanceView() {
     }
   }, [equipmentStatus, dispatch]);
 
+  // ---------------------- Handlers ---------------------- //
+
   const handleFilterByName = (event) => {
     setFilterName(event.target.value);
   };
@@ -72,6 +73,12 @@ export default function MaintenanceView() {
   const handleSelectionChange = (newSelection) => {
     setSelectedRows(newSelection);
   };
+
+  const handleSchedule = () => {
+    dispatch(openDialog({ dialogType: 'addMaintenance' }));
+  };
+
+  // ---------------------- Helpers ---------------------- //
 
   const getEquipmentName = (equipmentId) => {
     const foundEquipment = equipment.find((eq) => eq.id === equipmentId);
@@ -91,11 +98,18 @@ export default function MaintenanceView() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
+  // ---------------------- Render ---------------------- //
+
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Mantenimientos</Typography>
-        <Button variant="contained" color="success" startIcon={<Iconify icon="ic:schedule" />}>
+        <Button
+          variant="contained"
+          color="success"
+          onClick={handleSchedule}
+          startIcon={<Iconify icon="ic:schedule" />}
+        >
           Programar
         </Button>
       </Stack>
@@ -143,6 +157,8 @@ export default function MaintenanceView() {
           </TableContainer>
         </Scrollbar>
       </Card>
+      
+      <AddMaintenanceDialog />
     </Container>
   );
 }

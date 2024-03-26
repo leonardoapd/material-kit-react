@@ -19,15 +19,17 @@ import {
   DialogActions,
 } from '@mui/material';
 
+import { selectEquipment } from 'src/features/equipment/equipmentSlice';
 import { addMaintenance } from 'src/features/maintenance/maintenanceSlice';
 import { closeDialog, selectDialogOpen } from 'src/features/dialogs/dialogsSlice';
 import { fetchMaintenanceTasks } from 'src/features/maintenance/maintenanceTaskSlice';
 import { selectUiParametersByName } from 'src/features/uiparameters/uiParametersSlice';
 
-export default function AddMaintenanceDialog({ selected, inventory }) {
+export default function AddMaintenanceDialog({ selected = { id: '' } }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const open = useSelector((state) => selectDialogOpen(state, 'addMaintenance'));
+  const inventory = useSelector(selectEquipment);
   const maintenanceTypes = useSelector((state) =>
     selectUiParametersByName(state, 'TipoMantenimiento')
   );
@@ -200,6 +202,5 @@ export default function AddMaintenanceDialog({ selected, inventory }) {
 AddMaintenanceDialog.propTypes = {
   onClose: PropTypes.func,
   onConfirm: PropTypes.func,
-  selected: PropTypes.object,
-  inventory: PropTypes.array,
+  selected: PropTypes.object
 };
