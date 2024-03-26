@@ -87,7 +87,7 @@ export default function EquipmentTableRow({ rowInfo, selected, handleClick, empl
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
-            <Iconify icon="eva:more-vertical-fill" />
+            <Iconify icon="material-symbols:expand-circle-down-outline-rounded" />
           </IconButton>
         </TableCell>
       </TableRow>
@@ -104,22 +104,19 @@ export default function EquipmentTableRow({ rowInfo, selected, handleClick, empl
       >
         <MenuItem onClick={handleShowInfo}>
           <Iconify icon="eva:eye-fill" sx={{ mr: 2 }} />
-          View Resume
+          Ver información
         </MenuItem>
-
         <MenuItem onClick={handleCloseMenu}>
           <Iconify icon="eva:download-fill" sx={{ mr: 2 }} />
-          Download Manual
+          Descargar manual
         </MenuItem>
-
         <MenuItem onClick={handleEdit}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
+          Editar
         </MenuItem>
-
         <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
+          Eliminar
         </MenuItem>
       </Popover>
     </>

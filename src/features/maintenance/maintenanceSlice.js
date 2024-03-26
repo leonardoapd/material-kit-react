@@ -78,7 +78,7 @@ export const maintenanceSlice = createSlice({
 });
 
 export const selectMaintenance = (state) => state.maintenance.maintenance;
-export const selectMaintenanceLoading = (state) => state.maintenance.isLoading;
+export const selectMaintenanceStatus = (state) => state.maintenance.isLoading;
 export const selectMaintenanceError = (state) => state.maintenance.error;
 
 export default maintenanceSlice.reducer;

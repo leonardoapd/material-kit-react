@@ -1,117 +1,148 @@
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useState, useEffect, useCallback } from 'react';
 
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Unstable_Grid2';
-import Typography from '@mui/material/Typography';
+import { DataGrid } from '@mui/x-data-grid';
+import {
+  Card,
+  Stack,
+  Button,
+  Container,
+  Typography,
+  TableContainer,
+} from '@mui/material';
 
 import {
-  fetchMaintenanceTasks,
-  selectMaintenanceTasks,
-  selectMaintenanceTaskStatus,
-} from 'src/features/maintenance/maintenanceTaskSlice';
+  fetchEquipment,
+  selectEquipment,
+  selectEquipmentStatus,
+} from 'src/features/equipment/equipmentSlice';
+import {
+  fetchMaintenance,
+  selectMaintenance,
+  selectMaintenanceStatus,
+} from 'src/features/maintenance/maintenanceSlice';
 
-import MaintenanceEfficiency from '../maintenance-efficiency';
-import MaintenanceCalendarEvents from '../maintenance-calendar-events';
+import Iconify from 'src/components/iconify';
+import Scrollbar from 'src/components/scrollbar';
+import LoadingSkeleton from 'src/components/loading-skeleton';
+
+import MaintenanceActionMenu from '../maintenance-action-menu';
+import MaintenanceTableToolbar from '../maintenance-table-toolbar';
+
+const columns = [
+  { field: 'type', headerName: 'Tipo', width: 140 },
+  { field: 'equipmentName', headerName: 'Nombre del Equipo', width: 200 },
+  { field: 'description', headerName: 'Descripción', width: 400 },
+  { field: 'frequency', headerName: 'Frecuencia en Dias', width: 180 },
+  {
+    field: 'actions',
+    headerName: '',
+    width: 40,
+    align: 'right',
+    renderCell: (params) => <MaintenanceActionMenu maintenanceId={params.row.id} />,
+  },
+];
 
 export default function MaintenanceView() {
   const dispatch = useDispatch();
-  const maintenanceTasks = useSelector(selectMaintenanceTasks);
-  const status = useSelector(selectMaintenanceTaskStatus);
-  // eslint-disable-next-line no-unused-vars
-  const [percentage, setPercentage] = useState({
-    cumplimiento: 0,
-    efectividad: 0,
-  });
-  const [month, setMonth] = useState(new Date().getMonth());
-  const [year, setYear] = useState(new Date().getFullYear());
+  const [filterName, setFilterName] = useState('');
+  const maintenances = useSelector(selectMaintenance);
+  const status = useSelector(selectMaintenanceStatus);
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  const equipment = useSelector(selectEquipment);
+  const equipmentStatus = useSelector(selectEquipmentStatus);
 
   useEffect(() => {
     if (status === 'idle') {
-      dispatch(fetchMaintenanceTasks());
+      dispatch(fetchMaintenance());
     }
   }, [status, dispatch]);
 
-  const getEfficiency = useCallback(
-    (monthNumber, yearNumber) => {
-      setMonth(monthNumber);
-      setYear(yearNumber);
+  useEffect(() => {
+    if (equipmentStatus === 'idle') {
+      dispatch(fetchEquipment());
+    }
+  }, [equipmentStatus, dispatch]);
 
-      const monthlyTasks = maintenanceTasks.filter(
-        (task) =>
-          new Date(task.startDate).getMonth() === monthNumber &&
-          new Date(task.startDate).getFullYear() === yearNumber
-      );
+  const handleFilterByName = (event) => {
+    setFilterName(event.target.value);
+  };
 
-      const statusCounts = monthlyTasks.reduce(
-        (counts, task) => {
-          counts[task.status] = (counts[task.status] || 0) + 1;
-          return counts;
-        },
-        {
-          Pendiente: 0,
-          'En Progreso': 0,
-          Ejecutado: 0,
-          Cancelado: 0,
-          Reprogramado: 0,
-        }
-      );
+  const handleSelectionChange = (newSelection) => {
+    setSelectedRows(newSelection);
+  };
 
-      const ejecutadoCount = statusCounts.Ejecutado || 0;
-      const canceladoCount = statusCounts.Cancelado || 0;
-      const reprogramadoCount = statusCounts.Reprogramado || 0;
+  const getEquipmentName = (equipmentId) => {
+    const foundEquipment = equipment.find((eq) => eq.id === equipmentId);
+    return foundEquipment ? foundEquipment.name : 'Equipo no encontrado';
+  };
 
-      const cumplimiento = (ejecutadoCount / (ejecutadoCount + canceladoCount)) * 100 || 0;
-      const efectividad = (ejecutadoCount / (ejecutadoCount + reprogramadoCount)) * 100 || 0;
+  const rowsWithEquipmentName = maintenances.map((maintenance) => ({
+    ...maintenance,
+    equipmentName: getEquipmentName(maintenance.equipmentId),
+  }));
 
-      setPercentage({
-        cumplimiento: cumplimiento.toFixed(2),
-        efectividad: efectividad.toFixed(2),
-      });
-    },
-    [maintenanceTasks]
+  const dataFiltered = rowsWithEquipmentName.filter((row) =>
+    Object.values(row).some((value) =>
+      String(value).toLowerCase().includes(filterName.toLowerCase())
+    )
   );
 
-  useEffect(() => {
-    getEfficiency(month, year);
-  }, [month, year, maintenanceTasks, getEfficiency]);
+  const notFound = !dataFiltered.length && !!filterName;
 
   return (
-    <Container maxWidth="xl">
-      <Typography variant="h4" sx={{ mb: 5 }}>
-        Mantenimientos
-      </Typography>
+    <Container>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+        <Typography variant="h4">Mantenimientos</Typography>
+        <Button variant="contained" color="success" startIcon={<Iconify icon="ic:schedule" />}>
+          Programar
+        </Button>
+      </Stack>
 
-      <Grid container spacing={3}>
-        <Grid item="true" xs={12} md={9}>
-          <MaintenanceCalendarEvents
-            title="Calendario"
-            subheader="Próximos mantenimientos"
-            maintenanceTasks={maintenanceTasks}
-            onMonthChange={getEfficiency}
-          />
-        </Grid>
-        <Grid item="true" container xs={12} md={3} spacing={3}>
-          <Grid item="true" xs={12}>
-            <MaintenanceEfficiency
-              title="Efectividad"
-              subheader={`${percentage.efectividad}% de efectividad`}
-              chart={{
-                percent: percentage.efectividad / 100,
-              }}
-            />
-          </Grid>
-          <Grid item="true" xs={12}>
-            <MaintenanceEfficiency
-              title="Cumplimiento"
-              subheader={`${percentage.cumplimiento}% de cumplimiento`}
-              chart={{
-                percent: percentage.cumplimiento / 100,
-              }}
-            />
-          </Grid>
-        </Grid>
-      </Grid>
+      <Card>
+        <MaintenanceTableToolbar
+          numSelected={selectedRows.length}
+          filterName={filterName}
+          onFilterName={handleFilterByName}
+        />
+        <Scrollbar>
+          <TableContainer>
+            <div style={{ width: '100%' }}>
+              <DataGrid
+                rows={dataFiltered}
+                columns={columns}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 5,
+                    },
+                  },
+                }}
+                pageSizeOptions={[5, 10, 20]}
+                checkboxSelection
+                autoHeight
+                columnHeaderHeight={90}
+                rowHeight={60}
+                disableSelectionOnClick
+                disableColumnMenu
+                disableColumnSelector
+                slots={{
+                  loadingOverlay: LoadingSkeleton,
+                }}
+                loading={status === 'loading'}
+                onRowSelectionModelChange={handleSelectionChange}
+              />
+            </div>
+
+            {notFound && (
+              <Typography variant="body2" color="text.secondary" sx={{ p: 2 }}>
+                No se encontraron mantenimientos que coincidan con la búsqueda.
+              </Typography>
+            )}
+          </TableContainer>
+        </Scrollbar>
+      </Card>
     </Container>
   );
 }
