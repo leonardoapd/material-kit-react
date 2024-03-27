@@ -11,6 +11,7 @@ export const InventoryPage = lazy(() => import('src/pages/inventory'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const MaintenancePage = lazy(() => import('src/pages/maintenance'));
+export const TestPage = lazy(() => import('src/pages/tests'));
 
 // ----------------------------------------------------------------------
 
@@ -30,7 +31,8 @@ export default function Router() {
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'inventory', element: <InventoryPage />}, 
-        { path: 'maintenance', element: <MaintenancePage />}
+        { path: 'maintenance', element: <MaintenancePage />},
+        { path: 'schedule', element: <TestPage />},
       ],
     },
     {

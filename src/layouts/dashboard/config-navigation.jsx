@@ -22,6 +22,11 @@ const navConfig = [
     path: '/maintenance',
     icon: icon('ic_maintenance'),
   },
+  {
+    title: 'planificador',
+    path: '/schedule',
+    icon: icon('ic_planner'),
+  }
   // {
   //   title: 'user',
   //   path: '/user',
