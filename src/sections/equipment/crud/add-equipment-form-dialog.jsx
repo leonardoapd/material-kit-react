@@ -155,7 +155,6 @@ export default function AddEquipmentFormDialog() {
         </Button>
         <Button
           onClick={handleConfirm}
-          // variant="contained"
           size="small"
           autoFocus
           color="success"

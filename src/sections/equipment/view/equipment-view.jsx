@@ -2,20 +2,10 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
-import TableRow from '@mui/material/TableRow';
-import Container from '@mui/material/Container';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import Typography from '@mui/material/Typography';
-import TableContainer from '@mui/material/TableContainer';
-import TablePagination from '@mui/material/TablePagination';
+import { DataGrid } from '@mui/x-data-grid';
+import { Card, Stack, Button, Container, Typography, TableContainer } from '@mui/material';
 
 import { openDialog } from 'src/features/dialogs/dialogsSlice';
-// import { data } from 'src/_mock/inventory';
 import {
   fetchEmployees,
   selectEmployees,
@@ -29,38 +19,57 @@ import {
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import LoadingSkeleton from 'src/components/loading-skeleton';
 
-// import './equipment-view.css';
-import TableNoData from '../table-no-data';
-import TableEmptyRows from '../table-empty-rows';
-import EquipmentTableRow from '../equipment-table-row';
-import EquipmentTableHead from '../equipment-table-head';
+import EquipmentActionMenu from '../equipment-action-menu';
 import EquipmentTableToolbar from '../equipment-table-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../utils';
 import AddEquipmentDialog from '../crud/add-equipment-form-dialog';
 import EditEquipmentDialog from '../crud/edit-equipment-form-dialog';
-import EquipmentTableRowSkeleton from '../equipment-table-row-skeleton';
 import ShowEquipmentInfoDialog from '../crud/show-equipment-info-dialog';
 import DeleteConfirmationDialog from '../crud/delete-confirmation-dialog';
 import AddMaintenanceDialog from '../../maintenance/crud/add-maintenance-form-dialog';
 
 // ----------------------------------------------------------------------
 
+const columns = [
+  { field: 'code', headerName: 'Código', width: 140 },
+  { field: 'name', headerName: 'Equipo', width: 200 },
+  { field: 'location', headerName: 'Ubicación', width: 100 },
+  {
+    field: 'purchaseDate',
+    headerName: 'Fecha de Compra',
+    width: 180,
+    headerClassName: 'header-style',
+  },
+  { field: 'serialNumber', headerName: 'Serial', width: 140 },
+  { field: 'model', headerName: 'Modelo', width: 140 },
+  { field: 'category', headerName: 'Categoría', width: 160 },
+  {
+    field: 'accountableName',
+    headerName: 'Responsable',
+    width: 160,
+  },
+  {
+    field: 'actions',
+    headerName: '',
+    width: 40,
+    align: 'right',
+    renderCell: (params) => <EquipmentActionMenu equipmentId={params.row.id} />,
+  },
+];
+
 export default function EquipmentView() {
   const dispatch = useDispatch();
-  const data = useSelector(selectEquipment);
+  const [filterName, setFilterName] = useState('');
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  const inventory = useSelector(selectEquipment);
   const status = useSelector(selectEquipmentStatus);
 
   const employees = useSelector(selectEmployees);
   const employeeStatus = useSelector(selectEmployeeStatus);
 
-  const [page, setPage] = useState(0);
-  const [order, setOrder] = useState('asc');
-  const [selected, setSelected] = useState([]);
-  const [orderBy, setOrderBy] = useState('name');
-  const [filterName, setFilterName] = useState('');
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [rowSelected, setRowSelected] = useState({});
+  // ---------------------- Effects ---------------------- //
 
   useEffect(() => {
     if (status === 'idle') {
@@ -74,69 +83,47 @@ export default function EquipmentView() {
     }
   }, [employeeStatus, dispatch]);
 
-  const handleSort = (event, id) => {
-    const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    }
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = data.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, equipment) => {
-    const { name } = equipment;
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-      setRowSelected(equipment);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    } else {
-      setRowSelected({});
-    }
-
-    setSelected(newSelected);
-  };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setPage(0);
-    setRowsPerPage(parseInt(event.target.value, 10));
-  };
+  // ---------------------- Handlers ---------------------- //
 
   const handleFilterByName = (event) => {
-    setPage(0);
     setFilterName(event.target.value);
   };
+
+  const handleSelectionChange = (newSelection) => {
+    setSelectedRows(newSelection);
+  };
+
+  // const handleOpenAddMaintenanceDialog = () => {
+  //   dispatch(openDialog({ dialogType: 'addMaintenance' }));
+  // };
 
   const handleOpenAddEquipmentDialog = () => {
     dispatch(openDialog({ dialogType: 'addEquipment' }));
   };
 
-  const dataFiltered = applyFilter({
-    inputData: data,
-    comparator: getComparator(order, orderBy),
-    filterName,
-  });
+  // ---------------------- Helpers ---------------------- //
+
+  const getAccountableName = (accountableId) => {
+    const foundEmployee = employees.find((employee) => employee.id === accountableId);
+    return foundEmployee ? foundEmployee.name : '';
+  };
+
+  const formatPurchaseDate = (purchaseDate) => {
+    const normalDate = new Date(purchaseDate);
+    return normalDate.toLocaleDateString('en-GB');
+  };
+
+  const rowsWithAccountableName = inventory.map((equipment) => ({
+    ...equipment,
+    accountableName: getAccountableName(equipment.accountableId),
+    purchaseDate: formatPurchaseDate(equipment.purchaseDate),
+  }));
+
+  const dataFiltered = rowsWithAccountableName.filter((row) =>
+    Object.values(row).some((value) =>
+      String(value).toLowerCase().includes(filterName.toLowerCase())
+    )
+  );
 
   const notFound = !dataFiltered.length && !!filterName;
 
@@ -157,99 +144,63 @@ export default function EquipmentView() {
 
       <Card>
         <EquipmentTableToolbar
-          numSelected={selected.length}
+          numSelected={selectedRows.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
         />
 
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
-            <Table sx={{ minWidth: 800 }}>
-              <EquipmentTableHead
-                order={order}
-                orderBy={orderBy}
-                rowCount={data.length}
-                numSelected={selected.length}
-                onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
-                headLabel={[
-                  { id: 'code', label: 'Código' },
-                  { id: 'name', label: 'Equipo' },
-                  { id: 'location', label: 'Ubicacion' },
-                  { id: 'purchaseDate', label: 'Fecha de compra' },
-                  { id: 'serialNumber', label: 'Serial' },
-                  { id: 'model', label: 'Modelo' },
-                  { id: 'category', label: 'Categoria' },
-                  { id: 'accountable', label: 'Responsable' },
-                  { id: '' },
-                ]}
+            <div style={{ width: '100%' }}>
+              <DataGrid
+                rows={dataFiltered}
+                columns={columns}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 5,
+                    },
+                  },
+                }}
+                pageSizeOptions={[5, 10, 20]}
+                checkboxSelection
+                autoHeight
+                columnHeaderHeight={90}
+                rowHeight={70}
+                disableRowSelectionOnClick
+                disableColumnMenu
+                disableColumnSelector
+                slots={{
+                  loadingOverlay: LoadingSkeleton,
+                }}
+                loading={status === 'loading'}
+                onRowSelectionModelChange={handleSelectionChange}
+                sx={{
+                  '& .MuiDataGrid-columnHeaderTitle': {
+                    fontWeight: 'bold',
+                    fontSize: '1rem',
+                    color: '#697A87',
+                  },
+                }}
               />
+            </div>
 
-              <TableBody>
-                {status === 'loading' // Verifica si los datos están cargando
-                  ? // Renderiza el Skeleton para simular las celdas mientras se cargan los datos
-                    Array.from(Array(rowsPerPage).keys()).map((index) => (
-                      <EquipmentTableRowSkeleton key={index} />
-                    ))
-                  : // Renderiza los datos normales si no están cargando
-                    dataFiltered
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((rowInfo) => {
-                        const { id, name } = rowInfo;
-                        return (
-                          <EquipmentTableRow
-                            key={id}
-                            rowInfo={rowInfo}
-                            employees={employees}
-                            selected={selected.indexOf(name) !== -1}
-                            handleClick={(event) => handleClick(event, rowInfo)}
-                          />
-                        );
-                      })}
-
-                {status === 'failed' && (
-                  <TableRow>
-                    <TableCell colSpan={9}>
-                      <Container
-                        sx={{
-                          mt: 3,
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <Typography variant="h4">Error al cargar los datos</Typography>
-                      </Container>
-                    </TableCell>
-                  </TableRow>
-                )}
-
-                <TableEmptyRows height={77} emptyRows={emptyRows(page, rowsPerPage, data.length)} />
-
-                {notFound && <TableNoData query={filterName} />}
-              </TableBody>
-            </Table>
+            {notFound && (
+              <Typography variant="body2" color="text.secondary" sx={{ p: 2 }}>
+                No se encontraron mantenimientos que coincidan con la búsqueda.
+              </Typography>
+            )}
           </TableContainer>
         </Scrollbar>
-
-        <TablePagination
-          page={page}
-          component="div"
-          count={data.length}
-          rowsPerPage={rowsPerPage}
-          onPageChange={handleChangePage}
-          rowsPerPageOptions={[5, 10, 25]}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
       </Card>
 
       <AddEquipmentDialog />
 
-      <AddMaintenanceDialog selected={rowSelected} />
+      <AddMaintenanceDialog selected={selectedRows[0]} />
 
       <DeleteConfirmationDialog />
 
-      <EditEquipmentDialog employees={employees} />
+      <EditEquipmentDialog />
 
       <ShowEquipmentInfoDialog />
     </Container>

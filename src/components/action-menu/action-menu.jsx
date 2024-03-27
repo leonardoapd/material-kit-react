@@ -18,7 +18,6 @@ export default function ActionMenu({ actions, itemId }) {
   };
 
   const handleAction = (action) => {
-    console.log(`Ejecutando acción: ${action.label}`);
     action.onClick(itemId);
     handleClose();
   };

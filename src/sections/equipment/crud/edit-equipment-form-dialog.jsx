@@ -1,5 +1,4 @@
 import { format } from 'date-fns';
-import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -16,30 +15,38 @@ import {
   DialogActions,
 } from '@mui/material';
 
-import { editEquipment } from 'src/features/equipment/equipmentSlice';
+import { selectEmployees } from 'src/features/employee/employeeSlice';
+import { editEquipment, selectEquipment } from 'src/features/equipment/equipmentSlice';
 import { selectUiParametersByName } from 'src/features/uiparameters/uiParametersSlice';
 import { closeDialog, selectDialogOpen, selectDialogData } from 'src/features/dialogs/dialogsSlice';
 
-export default function EditEquipmentFormDialog({ employees }) {
+export default function EditEquipmentFormDialog() {
   const dispatch = useDispatch();
+
+  const employees = useSelector(selectEmployees);
+  const inventory = useSelector(selectEquipment);
   const open = useSelector((state) => selectDialogOpen(state, 'editEquipment'));
   const categories = useSelector((state) => selectUiParametersByName(state, 'TipoEquipo'));
   const locations = useSelector((state) => selectUiParametersByName(state, 'Ubicacion'));
+  const equipmentId = useSelector((state) => selectDialogData(state, 'editEquipment'));
+
+  const equipment = inventory.find((item) => item.id === equipmentId);
+  const employeesNames = employees.map((employee) => employee.name);
 
   const [editForm, setEditForm] = useState({
     name: '',
     code: '',
     serialNumber: '',
     purchaseDate: '',
-    location: null,
+    location: locations[0] || null,
     model: '',
-    category: null,
+    category: categories[0] || null,
     description: '',
     accountableId: '',
   });
 
-  const equipment = useSelector((state) => selectDialogData(state, 'editEquipment'));
-  const employeesNames = employees.map((employee) => employee.name);
+  const { name, code, serialNumber, location, model, description, accountableId, category } =
+    editForm;
 
   useEffect(() => {
     if (equipment) {
@@ -54,9 +61,6 @@ export default function EditEquipmentFormDialog({ employees }) {
       });
     }
   }, [equipment]);
-
-  const { name, code, serialNumber, location, model, description, accountableId, category } =
-    editForm;
 
   const handleClose = () => {
     dispatch(closeDialog({ dialogType: 'editEquipment' }));
@@ -130,9 +134,10 @@ export default function EditEquipmentFormDialog({ employees }) {
                   onChange={(event, value) => {
                     setEditForm({
                       ...editForm,
-                      location: value || '',
+                      location: value || null,
                     });
                   }}
+                  isOptionEqualToValue={(option, value) => option.value === value.value}
                   renderInput={(params) => (
                     <TextField {...params} label="Ubicacion" variant="outlined" />
                   )}
@@ -146,9 +151,10 @@ export default function EditEquipmentFormDialog({ employees }) {
                   onChange={(event, value) => {
                     setEditForm({
                       ...editForm,
-                      accountableId: employees[employeesNames.indexOf(value)]?.id || '',
+                      accountableId: employees[employeesNames.indexOf(value)]?.id || null,
                     });
                   }}
+                  isOptionEqualToValue={(option, value) => option.value === value.value}
                   renderInput={(params) => (
                     <TextField {...params} label="Responsable" variant="outlined" />
                   )}
@@ -163,7 +169,7 @@ export default function EditEquipmentFormDialog({ employees }) {
                 onChange={handleChange}
                 name="description"
                 multiline
-                rows={7.2} // Puedes ajustar el número de filas según sea necesario
+                rows={7.2}
               />
             </Stack>
           </Grid>
@@ -220,7 +226,3 @@ export default function EditEquipmentFormDialog({ employees }) {
     </Dialog>
   );
 }
-
-EditEquipmentFormDialog.propTypes = {
-  employees: PropTypes.array,
-};

@@ -7,10 +7,6 @@ export default function MaintenanceActionMenu({ maintenanceId }) {
     console.log('Mostrar información');
   };
 
-  const handleDownloadManual = () => {
-    console.log('Descargar manual');
-  };
-
   const handleEdit = () => {
     console.log('Editar');
   };
@@ -24,11 +20,6 @@ export default function MaintenanceActionMenu({ maintenanceId }) {
       label: 'Ver información',
       icon: 'eva:eye-fill',
       onClick: handleShowInfo,
-    },
-    {
-      label: 'Descargar manual',
-      icon: 'eva:download-fill',
-      onClick: handleDownloadManual,
     },
     {
       label: 'Editar',

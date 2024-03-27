@@ -25,7 +25,7 @@ import { closeDialog, selectDialogOpen } from 'src/features/dialogs/dialogsSlice
 import { fetchMaintenanceTasks } from 'src/features/maintenance/maintenanceTaskSlice';
 import { selectUiParametersByName } from 'src/features/uiparameters/uiParametersSlice';
 
-export default function AddMaintenanceDialog({ selected = { id: '' } }) {
+export default function AddMaintenanceDialog({ selected = null }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const open = useSelector((state) => selectDialogOpen(state, 'addMaintenance'));
@@ -43,20 +43,18 @@ export default function AddMaintenanceDialog({ selected = { id: '' } }) {
     estimatedDuration: 0,
   });
 
-  const { id } = selected;
+  const { equipmentId, type, description, firstMaintenanceTaskDate, frequency, estimatedDuration } =
+    addForm;
 
   useEffect(() => {
     if (selected) {
       setAddForm({
         ...addForm,
-        equipmentId: id,
+        equipmentId: selected,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, selected]);
-
-  const { equipmentId, type, description, firstMaintenanceTaskDate, frequency, estimatedDuration } =
-    addForm;
+  }, [selected]);
 
   const handleChange = (event) => {
     setAddForm({
@@ -76,7 +74,7 @@ export default function AddMaintenanceDialog({ selected = { id: '' } }) {
   const handleClose = () => {
     setAddForm((prev) => ({
       ...prev,
-      equipmentId: id,
+      equipmentId: selected,
       type: '',
       description: '',
       firstMaintenanceTaskDate: '',
@@ -202,5 +200,5 @@ export default function AddMaintenanceDialog({ selected = { id: '' } }) {
 AddMaintenanceDialog.propTypes = {
   onClose: PropTypes.func,
   onConfirm: PropTypes.func,
-  selected: PropTypes.object
+  selected: PropTypes.string,
 };

@@ -14,15 +14,21 @@ import {
   CardActions,
 } from '@mui/material';
 
+import { selectEquipment } from 'src/features/equipment/equipmentSlice';
 import { closeDialog, selectDialogOpen, selectDialogData } from 'src/features/dialogs/dialogsSlice';
 
 import Iconify from 'src/components/iconify';
 
-function ShowEquipmentInfoDialog() {
+export default function ShowEquipmentInfoDialog() {
   const dispatch = useDispatch();
-  const open = useSelector((state) => selectDialogOpen(state, 'showEquipmentInfo'));
-  const equipment = useSelector((state) => selectDialogData(state, 'showEquipmentInfo'));
 
+  const inventory = useSelector(selectEquipment);
+  const open = useSelector((state) => selectDialogOpen(state, 'showEquipmentInfo'));
+  const equipmentId = useSelector((state) => selectDialogData(state, 'showEquipmentInfo'));
+
+  const equipment = inventory.find((item) => item.id === equipmentId);
+
+  const [expanded, setExpanded] = useState(false);
   const [info, setInfo] = useState({
     name: '',
     code: '',
@@ -35,7 +41,8 @@ function ShowEquipmentInfoDialog() {
     description: '',
   });
 
-  const [expanded, setExpanded] = useState(false);
+  const { name, code, location, purchaseDate, serialNumber, photo, model, category, description } =
+  info;
 
   useEffect(() => {
     if (equipment) {
@@ -44,9 +51,6 @@ function ShowEquipmentInfoDialog() {
       });
     }
   }, [equipment]);
-
-  const { name, code, location, purchaseDate, serialNumber, photo, model, category, description } =
-    info;
 
   const purchaseDateFormatted = new Date(purchaseDate).toLocaleDateString('en-GB');
 
@@ -61,7 +65,7 @@ function ShowEquipmentInfoDialog() {
   const renderDescription = () => {
     const maxLength = 100; // Longitud máxima de la descripción antes de truncar
     const maxHeight = 200; // Altura máxima de la descripción antes de agregar un scrollbar
-    if (description.length > maxLength && !expanded) {
+    if (description && description.length > maxLength && !expanded) {
       return (
         <div style={{ maxHeight: `${maxHeight}px`, overflowY: 'auto' }}>
           <Typography variant="body2" color="text.secondary">
@@ -78,7 +82,7 @@ function ShowEquipmentInfoDialog() {
         <Typography variant="body2" color="text.secondary">
           {description}
         </Typography>
-        {description.length > maxLength && (
+        {description && description.length > maxLength && (
           <Button onClick={toggleExpanded} size="small">
             Ver menos
           </Button>
@@ -173,12 +177,9 @@ function ShowEquipmentInfoDialog() {
           </Stack>
         </CardContent>
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          {/* <Button size="small">Editar</Button> */}
           <Button size="small">Ver Detalles de Maintenimientos</Button>
         </CardActions>
       </Card>
     </Dialog>
   );
 }
-
-export default ShowEquipmentInfoDialog;

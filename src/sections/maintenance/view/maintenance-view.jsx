@@ -28,9 +28,17 @@ import AddMaintenanceDialog from '../crud/add-maintenance-form-dialog';
 
 const columns = [
   { field: 'type', headerName: 'Tipo', width: 140 },
-  { field: 'equipmentName', headerName: 'Nombre del Equipo', width: 200 },
+  {
+    field: 'equipmentName',
+    headerName: 'Nombre del Equipo',
+    width: 200,
+  },
   { field: 'description', headerName: 'Descripción', width: 400 },
-  { field: 'frequency', headerName: 'Frecuencia en Dias', width: 180 },
+  {
+    field: 'frequency',
+    headerName: 'Frecuencia en Dias',
+    width: 180,
+  },
   {
     field: 'actions',
     headerName: '',
@@ -43,9 +51,10 @@ const columns = [
 export default function MaintenanceView() {
   const dispatch = useDispatch();
   const [filterName, setFilterName] = useState('');
+  const [selectedRows, setSelectedRows] = useState([]);
+
   const maintenances = useSelector(selectMaintenance);
   const status = useSelector(selectMaintenanceStatus);
-  const [selectedRows, setSelectedRows] = useState([]);
 
   const equipment = useSelector(selectEquipment);
   const equipmentStatus = useSelector(selectEquipmentStatus);
@@ -138,7 +147,7 @@ export default function MaintenanceView() {
                 autoHeight
                 columnHeaderHeight={90}
                 rowHeight={60}
-                disableSelectionOnClick
+                disableRowSelectionOnClick
                 disableColumnMenu
                 disableColumnSelector
                 slots={{
@@ -146,6 +155,13 @@ export default function MaintenanceView() {
                 }}
                 loading={status === 'loading'}
                 onRowSelectionModelChange={handleSelectionChange}
+                sx={{
+                  '& .MuiDataGrid-columnHeaderTitle': {
+                    fontWeight: 'bold',
+                    fontSize: '1rem',
+                    color: '#697A87',
+                  },
+                }}
               />
             </div>
 
@@ -157,7 +173,7 @@ export default function MaintenanceView() {
           </TableContainer>
         </Scrollbar>
       </Card>
-      
+
       <AddMaintenanceDialog />
     </Container>
   );
