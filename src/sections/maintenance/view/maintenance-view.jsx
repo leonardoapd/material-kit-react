@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { DataGrid } from '@mui/x-data-grid';
@@ -50,6 +51,8 @@ const columns = [
 
 export default function MaintenanceView() {
   const dispatch = useDispatch();
+  const location = useLocation();
+
   const [filterName, setFilterName] = useState('');
   const [selectedRows, setSelectedRows] = useState([]);
 
@@ -60,6 +63,12 @@ export default function MaintenanceView() {
   const equipmentStatus = useSelector(selectEquipmentStatus);
 
   // ---------------------- Effects ---------------------- //
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const search = searchParams.get('equipmentName') || '';
+    setFilterName(search);
+  }, [location.search]);
 
   useEffect(() => {
     if (status === 'idle') {

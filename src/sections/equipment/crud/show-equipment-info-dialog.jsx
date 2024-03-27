@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -21,6 +22,7 @@ import Iconify from 'src/components/iconify';
 
 export default function ShowEquipmentInfoDialog() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const inventory = useSelector(selectEquipment);
   const open = useSelector((state) => selectDialogOpen(state, 'showEquipmentInfo'));
@@ -42,7 +44,7 @@ export default function ShowEquipmentInfoDialog() {
   });
 
   const { name, code, location, purchaseDate, serialNumber, photo, model, category, description } =
-  info;
+    info;
 
   useEffect(() => {
     if (equipment) {
@@ -102,11 +104,16 @@ export default function ShowEquipmentInfoDialog() {
     }
   };
 
+  const handleViewMaintenanceDetails = () => {
+    navigate(`/maintenance?equipmentName=${encodeURIComponent(name)}`);
+    dispatch(closeDialog({ dialogType: 'showEquipmentInfo' }));
+  };
+
   return (
     <Dialog open={open} onClose={handleClose}>
       <Card sx={{ position: 'relative', maxWidth: 485 }}>
         <CardMedia component="img" image={photo} alt={name} height="200" />
-        <Stack direction="row"  sx={{ position: 'absolute', top: '8px', right: '8px' }}>
+        <Stack direction="row" sx={{ position: 'absolute', top: '8px', right: '8px' }}>
           <Tooltip title={code ? 'Mostrar QR' : 'Generar código QR'}>
             <Button
               sx={{
@@ -128,7 +135,7 @@ export default function ShowEquipmentInfoDialog() {
                 borderRadius: '50%',
                 padding: '8px',
               }}
-            //   onClick={handlePrint}
+              //   onClick={handlePrint}
             >
               <Avatar sx={{ width: 40, height: 40 }}>
                 <Iconify icon="bi:printer" />
@@ -177,7 +184,9 @@ export default function ShowEquipmentInfoDialog() {
           </Stack>
         </CardContent>
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button size="small">Ver Detalles de Maintenimientos</Button>
+          <Button size="small" onClick={handleViewMaintenanceDetails}>
+            Ver Detalles de Maintenimientos
+          </Button>
         </CardActions>
       </Card>
     </Dialog>
