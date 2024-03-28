@@ -46,10 +46,21 @@ export default function ShowMaintenanceTaskDialog({ anchorEl }) {
   };
 
   const handleConfirm = () => {
-    // console.log(task);
-    dispatch(editMaintenanceTask(task));
+    let updatedTask;
+    if(task.status === 'Ejecutado') {
+      const completedDate = new Date().toISOString();
+      updatedTask = { ...task, completedDate };
+    } else {
+      updatedTask = { ...task, completedDate: null };
+    }
+    setTask(updatedTask);
+    dispatch(editMaintenanceTask(updatedTask)); 
     handleClose();
   };
+
+  const handleStatusChange = (e) => {
+    setTask({ ...task, status: e.target.value });
+  }
 
   return (
     <Popper open={open} anchorEl={anchorEl} transition>
@@ -76,7 +87,7 @@ export default function ShowMaintenanceTaskDialog({ anchorEl }) {
                       id="status"
                       value={task?.status}
                       label="Estado"
-                      onChange={(e) => setTask({ ...task, status: e.target.value })}
+                      onChange={handleStatusChange}
                     >
                       <MenuItem value="Pendiente">Pendiente</MenuItem>
                       <MenuItem value="En Progreso">En curso</MenuItem>
