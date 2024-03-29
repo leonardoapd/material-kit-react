@@ -23,6 +23,7 @@ import LoadingSkeleton from 'src/components/loading-skeleton';
 
 import EquipmentActionMenu from '../equipment-action-menu';
 import EquipmentTableToolbar from '../equipment-table-toolbar';
+import EquipmentPhotoNameCell from '../equipment-photo-name-cell';
 import AddEquipmentDialog from '../crud/add-equipment-form-dialog';
 import EditEquipmentDialog from '../crud/edit-equipment-form-dialog';
 import ShowEquipmentInfoDialog from '../crud/show-equipment-info-dialog';
@@ -33,7 +34,14 @@ import AddMaintenanceDialog from '../../maintenance/crud/add-maintenance-form-di
 
 const columns = [
   { field: 'code', headerName: 'Código', width: 140 },
-  { field: 'name', headerName: 'Equipo', width: 200 },
+  {
+    field: 'name',
+    headerName: 'Equipo',
+    width: 280,
+    renderCell: (params) => (
+      <EquipmentPhotoNameCell photo={params.row.photo} name={params.row.name} />
+    ),
+  },
   { field: 'location', headerName: 'Ubicación', width: 100 },
   {
     field: 'purchaseDate',
@@ -167,7 +175,7 @@ export default function EquipmentView() {
                 autoHeight
                 columnHeaderHeight={90}
                 rowHeight={70}
-                disableRowSelectionOnClick
+                // disableRowSelectionOnClick
                 disableColumnMenu
                 disableColumnSelector
                 slots={{
@@ -181,7 +189,19 @@ export default function EquipmentView() {
                     fontSize: '1rem',
                     color: '#697A87',
                   },
+                  '& .MuiDataGrid-row': {
+                    cursor: 'pointer',
+                  },
+                  '& .MuiDataGrid-columnHeader:focus, .MuiDataGrid-cell:focus': {
+                    outline: 'none',
+                  },
+                  '& .MuiDataGrid-cell': {
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '8px 4px',
+                  },
                 }}
+                getRowHeight={() => 'auto'}
               />
             </div>
 

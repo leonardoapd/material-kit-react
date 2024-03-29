@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 
+import { Button } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -30,18 +31,21 @@ export default function EquipmentTableToolbar({
   const renderOptions = () => {
     if (numSelected > 0 && numSelected < 2) {
       return (
-        <Tooltip title="Programar Mantenimiento">
-          <IconButton onClick={handleSchedule}>
-            <Iconify icon="ic:schedule" />
-          </IconButton>
-        </Tooltip>
+        <Button
+          variant="outlined"
+          color="success"
+          startIcon={<Iconify icon="ic:schedule" />}
+          onClick={handleSchedule}
+        >
+          Programar Mantenimiento
+        </Button>
       );
     }
     if (numSelected > 1) {
       return (
         <Tooltip title="Eliminar">
-          <IconButton onClick={onDelete}>
-            <Iconify icon="ic:round-delete" />
+          <IconButton onClick={onDelete} color="error">
+            <Iconify icon="ic:round-delete"  />
           </IconButton>
         </Tooltip>
       );
@@ -70,7 +74,7 @@ export default function EquipmentTableToolbar({
     >
       {numSelected > 0 ? (
         <Typography component="div" variant="subtitle1">
-          {numSelected} selected
+          {numSelected === 1 ? `${numSelected} seleccionado` : `${numSelected} seleccionados`}
         </Typography>
       ) : (
         <OutlinedInput

@@ -28,13 +28,18 @@ import AddMaintenanceDialog from '../crud/add-maintenance-form-dialog';
 // ----------------------------------------------------------------------
 
 const columns = [
-  { field: 'type', headerName: 'Tipo', width: 140 },
+  { field: 'type', headerName: 'Tipo', width: 100 },
   {
     field: 'equipmentName',
     headerName: 'Nombre del Equipo',
     width: 200,
   },
-  { field: 'description', headerName: 'Descripción', width: 400 },
+  { field: 'description', headerName: 'Descripción', width: 260 },
+  {
+    field: 'nextMaintenanceTaskDate',
+    headerName: 'Próximo Mantenimiento',
+    width: 220,
+  },
   {
     field: 'frequency',
     headerName: 'Frecuencia en Dias',
@@ -103,9 +108,15 @@ export default function MaintenanceView() {
     return foundEquipment ? foundEquipment.name : 'Equipo no encontrado';
   };
 
+  const formatNextDate = (nextDate) => {
+    const normalDate = new Date(nextDate);
+    return normalDate.toLocaleDateString('en-GB');
+  };
+
   const rowsWithEquipmentName = maintenances.map((maintenance) => ({
     ...maintenance,
     equipmentName: getEquipmentName(maintenance.equipmentId),
+    nextMaintenanceTaskDate: formatNextDate(maintenance.nextMaintenanceTaskDate),
   }));
 
   const dataFiltered = rowsWithEquipmentName.filter((row) =>
@@ -155,8 +166,8 @@ export default function MaintenanceView() {
                 checkboxSelection
                 autoHeight
                 columnHeaderHeight={90}
-                rowHeight={60}
-                disableRowSelectionOnClick
+                rowHeight={70}
+                // disableRowSelectionOnClick
                 disableColumnMenu
                 disableColumnSelector
                 slots={{
@@ -170,7 +181,19 @@ export default function MaintenanceView() {
                     fontSize: '1rem',
                     color: '#697A87',
                   },
+                  '& .MuiDataGrid-row': {
+                    cursor: 'pointer',
+                  },
+                  '& .MuiDataGrid-columnHeader:focus, .MuiDataGrid-cell:focus': {
+                    outline: 'none',
+                  },
+                  '& .MuiDataGrid-cell': {
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '8px 4px',
+                  }
                 }}
+                getRowHeight={() => 'auto'}
               />
             </div>
 
