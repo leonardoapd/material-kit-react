@@ -1,15 +1,13 @@
 import { format } from 'date-fns';
-import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
   Box,
-  Fade,
   Card,
   Stack,
+  Dialog,
   Button,
-  Popper,
   Select,
   MenuItem,
   CardHeader,
@@ -25,7 +23,7 @@ import {
   selectMaintenanceTasks,
 } from 'src/features/maintenance/maintenanceTaskSlice';
 
-export default function ShowMaintenanceTaskDialog({ anchorEl }) {
+export default function ShowMaintenanceTaskDialog() {
   const dispatch = useDispatch();
   const open = useSelector((state) => selectDialogOpen(state, 'showMaintenanceTask'));
   const data = useSelector((state) => selectDialogData(state, 'showMaintenanceTask'));
@@ -47,73 +45,63 @@ export default function ShowMaintenanceTaskDialog({ anchorEl }) {
 
   const handleConfirm = () => {
     let updatedTask;
-    if(task.status === 'Ejecutado') {
+    if (task.status === 'Ejecutado') {
       const completedDate = new Date().toISOString();
       updatedTask = { ...task, completedDate };
     } else {
       updatedTask = { ...task, completedDate: null };
     }
     setTask(updatedTask);
-    dispatch(editMaintenanceTask(updatedTask)); 
+    dispatch(editMaintenanceTask(updatedTask));
     handleClose();
   };
 
   const handleStatusChange = (e) => {
     setTask({ ...task, status: e.target.value });
-  }
+  };
 
   return (
-    <Popper open={open} anchorEl={anchorEl} transition>
-      {({ TransitionProps }) => (
-        <Fade {...TransitionProps} timeout={350}>
-          {anchorEl && (
-            <Card sx={{ maxWidth: 400 }}>
-              <CardHeader title={task?.title} />
-              <Box sx={{ p: 3 }}>
-                <Stack direction="column" spacing={1.2} justifyContent="flex-end">
-                  <Typography variant="body2" color="text.secondary">
-                    {format(new Date(task?.startDate), 'eeee, dd/MM/yyyy HH:mm')}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {
-                      maintenances.find((maintenance) => maintenance.id === task?.maintenanceId)
-                        ?.description
-                    }
-                  </Typography>
-                  <FormControl fullWidth>
-                    <InputLabel id="status">Estado</InputLabel>
-                    <Select
-                      labelId="status"
-                      id="status"
-                      value={task?.status}
-                      label="Estado"
-                      onChange={handleStatusChange}
-                    >
-                      <MenuItem value="Pendiente">Pendiente</MenuItem>
-                      <MenuItem value="En Progreso">En curso</MenuItem>
-                      <MenuItem value="Ejecutado">Ejecutado</MenuItem>
-                      <MenuItem value="Cancelado">Cancelado</MenuItem>
-                      <MenuItem value="Reprogramado">Reprogramado</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Stack>
-                <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
-                  <Button onClick={handleClose} variant="outlined">
-                    Cerrar
-                  </Button>
-                  <Button onClick={handleConfirm} color="primary" variant="contained">
-                    Guardar
-                  </Button>
-                </Stack>
-              </Box>
-            </Card>
-          )}
-        </Fade>
-      )}
-    </Popper>
+    <Dialog open={open} onClose={handleClose}>
+      <Card sx={{ maxWidth: 400 }}>
+        <CardHeader title={task?.title} />
+        <Box sx={{ p: 3 }}>
+          <Stack direction="column" spacing={1.6} justifyContent="flex-end">
+            <Typography variant="body2" color="text.secondary">
+              {task?.startDate && format(new Date(task.startDate), 'eeee, dd/MM/yyyy HH:mm')}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {
+                maintenances.find((maintenance) => maintenance.id === task?.maintenanceId)
+                  ?.description
+              }
+            </Typography>
+            <FormControl fullWidth>
+              <InputLabel id="status">Estado</InputLabel>
+              <Select
+                labelId="status"
+                id="status"
+                value={task?.status}
+                label="Estado"
+                onChange={handleStatusChange}
+              >
+                <MenuItem value="Pendiente">Pendiente</MenuItem>
+                <MenuItem value="En Progreso">En curso</MenuItem>
+                <MenuItem value="Ejecutado">Ejecutado</MenuItem>
+                <MenuItem value="Cancelado">Cancelado</MenuItem>
+                <MenuItem value="Reprogramado">Reprogramado</MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
+          <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
+            <Button onClick={handleClose} variant="outlined">
+              Cerrar
+            </Button>
+            <Button onClick={handleConfirm} color="primary" variant="contained">
+              Guardar
+            </Button>
+          </Stack>
+        </Box>
+      </Card>
+    </Dialog>
   );
 }
-
-ShowMaintenanceTaskDialog.propTypes = {
-  anchorEl: PropTypes.any,
-};

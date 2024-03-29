@@ -1,4 +1,6 @@
 import { faker } from '@faker-js/faker';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -19,6 +21,26 @@ import AppConversionRates from '../app-conversion-rates';
 // ----------------------------------------------------------------------
 
 export default function AppView() {
+  const [monthlyCompletionRates, setMonthlyCompletionRates] = useState({});
+
+  useEffect(() => {
+    const fetchMonthlyCompletionRates = async () => {
+      try {
+        const response = await axios.get('http://localhost:5263/api/maintenancechart/monthly-completion');
+        setMonthlyCompletionRates(response.data);
+      } catch (error) {
+        console.error('Error fetching monthly completion rates:', error);
+      }
+    };
+
+    fetchMonthlyCompletionRates();
+  }, []);
+
+  const labels = Object.keys(monthlyCompletionRates);
+  const series = Object.values(monthlyCompletionRates).map((value) => (value * 100).toFixed(1));
+  const average = series.reduce((acc, value) => acc + parseFloat(value), 0) / series.length;
+
+
   return (
     <Container maxWidth="xl">
       <Typography variant="h4" sx={{ mb: 5 }}>
@@ -64,6 +86,37 @@ export default function AppView() {
 
         <Grid xs={12} md={6} lg={8}>
           <AppWebsiteVisits
+            title="Cumplimiento de mantenimiento"
+            subheader={`Year average: ${average.toFixed(1)}%`}
+            chart={{
+              labels,
+              series: [
+                {
+                  name: 'Cumplimiento',
+                  type: 'bar',
+                  fill: 'solid',
+                  data: series,
+                },
+                {
+                  name: 'Esperado',
+                  type: 'area',
+                  fill: 'gradient',
+                  data: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+                },
+                // {
+                //   name: 'Team C',
+                //   type: 'line',
+                //   fill: 'solid',
+                //   data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
+                // },
+              ],
+              colors: ['#F67A5B'],
+            }}
+          />
+        </Grid>
+
+        <Grid xs={12} md={6} lg={8}>
+          <AppWebsiteVisits
             title="Website Visits"
             subheader="(+43%) than last year"
             chart={{
@@ -85,7 +138,7 @@ export default function AppView() {
                   name: 'Team A',
                   type: 'column',
                   fill: 'solid',
-                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
+                  data: [23, 11, 22, 27, 13, 122, 37, 21, 44, 22, 30],
                 },
                 {
                   name: 'Team B',

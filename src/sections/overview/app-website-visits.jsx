@@ -15,7 +15,7 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
     colors,
     plotOptions: {
       bar: {
-        columnWidth: '16%',
+        columnWidth: '26%',
       },
     },
     fill: {
@@ -31,7 +31,7 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
       y: {
         formatter: (value) => {
           if (typeof value !== 'undefined') {
-            return `${value.toFixed(0)} visits`;
+            return `${value.toFixed(0)}%`;
           }
           return value;
         },
