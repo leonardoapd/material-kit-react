@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { faker } from '@faker-js/faker';
+import { useDispatch, useSelector } from 'react-redux';
 import React, { useState, useEffect } from 'react';
 
 import Container from '@mui/material/Container';
@@ -9,6 +10,18 @@ import Typography from '@mui/material/Typography';
 import Iconify from 'src/components/iconify';
 
 import ShowMaintenanceTaskDialog from 'src/sections/maintenance/crud/show-maintenance-form-dialog';
+
+import {
+  fetchMaintenanceComplience,
+  selectMaintenanceComplience,
+  selectChartsLoading,
+} from 'src/features/charts/chartsSlice';
+
+import {
+  fetchMaintenanceTasks,
+  selectMaintenanceTasks,
+  selectMaintenanceTaskStatus,
+} from 'src/features/maintenance/maintenanceTaskSlice';
 
 import AppTasks from '../app-tasks';
 import AppPlanner from '../app-planner';
@@ -25,22 +38,17 @@ import AppMaintenanceCompliance from '../app-maintenance-compliance';
 // ----------------------------------------------------------------------
 
 export default function AppView() {
-  const [monthlyCompletionRates, setMonthlyCompletionRates] = useState({});
+  const dispatch = useDispatch();
+  const monthlyCompletionRates = useSelector(selectMaintenanceComplience);
+  const chartsLoading = useSelector(selectChartsLoading);
+
+  // const [monthlyCompletionRates, setMonthlyCompletionRates] = useState({});
 
   useEffect(() => {
-    const fetchMonthlyCompletionRates = async () => {
-      try {
-        const response = await axios.get(
-          'http://localhost:5263/api/maintenancechart/monthly-completion'
-        );
-        setMonthlyCompletionRates(response.data);
-      } catch (error) {
-        console.error('Error fetching monthly completion rates:', error);
-      }
-    };
-
-    fetchMonthlyCompletionRates();
-  }, []);
+    if (chartsLoading === 'idle') {
+      dispatch(fetchMaintenanceComplience());
+    }
+  }, [chartsLoading, dispatch]);
 
   const labels = Object.keys(monthlyCompletionRates);
   const series = Object.values(monthlyCompletionRates).map((value) => (value * 100).toFixed(1));
@@ -118,7 +126,7 @@ export default function AppView() {
           />
         </Grid>
 
-        <ShowMaintenanceTaskDialog />
+        <ShowMaintenanceTaskDialog onStatusChange={() => dispatch(fetchMaintenanceComplience())} />
         {/* <Grid xs={12} md={6} lg={8}>
           <AppWebsiteVisits
             title="Website Visits"

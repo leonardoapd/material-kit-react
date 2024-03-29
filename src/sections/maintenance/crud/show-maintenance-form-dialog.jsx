@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { format } from 'date-fns';
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,7 +24,7 @@ import {
   selectMaintenanceTasks,
 } from 'src/features/maintenance/maintenanceTaskSlice';
 
-export default function ShowMaintenanceTaskDialog() {
+export default function ShowMaintenanceTaskDialog({ onStatusChange }) {
   const dispatch = useDispatch();
   const open = useSelector((state) => selectDialogOpen(state, 'showMaintenanceTask'));
   const data = useSelector((state) => selectDialogData(state, 'showMaintenanceTask'));
@@ -43,7 +44,7 @@ export default function ShowMaintenanceTaskDialog() {
     dispatch(closeDialog({ dialogType: 'showMaintenanceTask' }));
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     let updatedTask;
     if (task.status === 'Ejecutado') {
       const completedDate = new Date().toISOString();
@@ -52,7 +53,12 @@ export default function ShowMaintenanceTaskDialog() {
       updatedTask = { ...task, completedDate: null };
     }
     setTask(updatedTask);
-    dispatch(editMaintenanceTask(updatedTask));
+    try {
+      await dispatch(editMaintenanceTask(updatedTask));
+      onStatusChange();
+    } catch (error) {
+      console.error(error);
+    }
     handleClose();
   };
 
@@ -105,3 +111,7 @@ export default function ShowMaintenanceTaskDialog() {
     </Dialog>
   );
 }
+
+ShowMaintenanceTaskDialog.propTypes = {
+  onStatusChange: PropTypes.func,
+};

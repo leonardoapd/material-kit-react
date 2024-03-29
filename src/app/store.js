@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 
+import chartsReducer from '../features/charts/chartsSlice';
 import dialogsReducer from '../features/dialogs/dialogsSlice';
 import employeeReducer from '../features/employee/employeeSlice';
 import equipmentReducer from '../features/equipment/equipmentSlice';
@@ -15,5 +16,6 @@ export default configureStore({
     dialogs: dialogsReducer,
     maintenance: maintenancesReducer,
     maintenanceTasks: maintenanceTaskReducer,
+    charts: chartsReducer,
   },
 });
