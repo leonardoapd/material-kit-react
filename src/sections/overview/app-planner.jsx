@@ -4,14 +4,9 @@ import '@bitnoi.se/react-scheduler/dist/style.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Scheduler } from '@bitnoi.se/react-scheduler';
 
-import { Card, Stack, Button, Container, CardHeader } from '@mui/material';
+import { Card, CardHeader } from '@mui/material';
 
 import { openDialog } from 'src/features/dialogs/dialogsSlice';
-// import {
-//   fetchEmployees,
-//   selectEmployees,
-//   selectEmployeeStatus,
-// } from 'src/features/employee/employeeSlice';
 import {
   fetchEquipment,
   selectEquipment,
@@ -28,7 +23,8 @@ import {
   selectMaintenanceTaskStatus,
 } from 'src/features/maintenance/maintenanceTaskSlice';
 
-import Iconify from 'src/components/iconify';
+import Legend from './task-color-legend';
+// import Iconify from 'src/components/iconify';
 
 export default function AppPlanner({ title, subheader }) {
   const dispatch = useDispatch();
@@ -36,8 +32,6 @@ export default function AppPlanner({ title, subheader }) {
   const maintenanceTaskStatus = useSelector(selectMaintenanceTaskStatus);
   const equipment = useSelector(selectEquipment);
   const equipmentStatus = useSelector(selectEquipmentStatus);
-  //   const employees = useSelector(selectEmployees);
-  //   const employeeStatus = useSelector(selectEmployeeStatus);
   const maintenances = useSelector(selectMaintenance);
   const maintenanceStatus = useSelector(selectMaintenanceStatus);
 
@@ -54,12 +48,6 @@ export default function AppPlanner({ title, subheader }) {
       dispatch(fetchEquipment());
     }
   }, [equipmentStatus, dispatch]);
-
-  //   useEffect(() => {
-  //     if (employeeStatus === 'idle') {
-  //       dispatch(fetchEmployees());
-  //     }
-  //   }, [employeeStatus, dispatch]);
 
   useEffect(() => {
     if (maintenanceStatus === 'idle') {
@@ -88,7 +76,7 @@ export default function AppPlanner({ title, subheader }) {
       label: {
         icon: equipmentInfo?.photo || 'https://picsum.photos/24',
         title: equipmentInfo?.name || 'Equipo Desconocido',
-        subtitle: maintenance.description,
+        subtitle: maintenance.type,
       },
       data: tasks.map((task) => {
         const color = getColorByStatus(task.status);
@@ -110,37 +98,37 @@ export default function AppPlanner({ title, subheader }) {
     dispatch(openDialog({ dialogType: 'showMaintenanceTask', data: clickedResource.id }));
   };
 
-  const handleFilter = () => {
-    setFilterButtonState(filterButtonState + 1);
-  };
-
   return (
-    <Card>
-      <CardHeader title={title} subheader={subheader} sx={{ mb: 5 }} />
-      <div style={{ height: 380, padding: 20 }}>
-        <Scheduler
-          data={events}
-          //   isLoading={isLoading}
-          onRangeChange={(newRange) => console.log(newRange)}
-          onTileClick={handleTileClick}
-          onItemClick={(item) => console.log(item)}
-          onFilterData={() => {
-            // Some filtering logic...
-            setFilterButtonState(1);
-          }}
-          onClearFilterData={() => {
-            // Some clearing filters logic...
-            setFilterButtonState(0);
-          }}
-          config={{
-            zoom: 1,
-            filterButtonState,
-            includeTakenHoursOnWeekendsInDayView: true,
-          }}
-          lang="es"
-        />
-      </div>
-    </Card>
+    <>
+      <Card>
+        <CardHeader title={title} subheader={subheader} sx={{ mb: 5 }} />
+        <div style={{ height: 380, padding: 20 }}>
+          <Scheduler
+            data={events}
+            //   isLoading={isLoading}
+            onRangeChange={(newRange) => console.log(newRange)}
+            onTileClick={handleTileClick}
+            onItemClick={(item) => console.log(item)}
+            onFilterData={() => {
+              // Some filtering logic...
+              setFilterButtonState(1);
+            }}
+            onClearFilterData={() => {
+              // Some clearing filters logic...
+              setFilterButtonState(0);
+            }}
+            config={{
+              zoom: 1,
+              filterButtonState,
+              includeTakenHoursOnWeekendsInDayView: true,
+            }}
+            lang="es"
+          />
+        </div>
+      </Card>
+
+      <Legend />
+    </>
   );
 }
 
