@@ -27,7 +27,7 @@ const Legend = () => (
         sx={{
           width: 16,
           height: 16,
-          backgroundColor: 'yellow',
+          backgroundColor: 'blue',
           mr: 1,
         }}
       />

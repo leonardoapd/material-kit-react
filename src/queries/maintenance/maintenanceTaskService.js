@@ -6,6 +6,9 @@ export const getMaintenanceTasks = async () => {
 };
 
 export const updateMaintenanceTask = async (maintenanceTask) => {
-  const response = await apiClient.put(`maintenancetask/${maintenanceTask.id}`, maintenanceTask);
+  const response = await apiClient.put(
+    `maintenancetask/${maintenanceTask.id}/updatestatus`,
+    maintenanceTask
+  );
   return response.data;
 };

@@ -30,7 +30,7 @@ import {
 
 import Iconify from 'src/components/iconify';
 
-import Legend from '../task-color-legend';
+// import Legend from '../task-color-legend';
 import ShowMaintenanceTaskDialog from '../../maintenance/crud/show-maintenance-form-dialog';
 
 export default function TextView() {
@@ -153,7 +153,7 @@ export default function TextView() {
           />
         </div>
       </Card>
-      <Legend />
+      {/* <Legend /> */}
 
       <ShowMaintenanceTaskDialog />
     </Container>

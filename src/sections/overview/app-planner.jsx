@@ -58,7 +58,7 @@ export default function AppPlanner({ title, subheader }) {
   const getColorByStatus = (status) => {
     const statusColors = {
       Pendiente: 'red',
-      'En Progreso': 'yellow',
+      'En Progreso': 'blue',
       Ejecutado: 'green',
       Cancelado: 'gray',
       Reprogramado: 'orange',
@@ -106,9 +106,9 @@ export default function AppPlanner({ title, subheader }) {
           <Scheduler
             data={events}
             //   isLoading={isLoading}
-            onRangeChange={(newRange) => console.log(newRange)}
+            // onRangeChange={(newRange) => console.log(newRange)}
             onTileClick={handleTileClick}
-            onItemClick={(item) => console.log(item)}
+            // onItemClick={(item) => console.log(item)}
             onFilterData={() => {
               // Some filtering logic...
               setFilterButtonState(1);

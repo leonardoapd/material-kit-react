@@ -31,7 +31,7 @@ export default function ShowMaintenanceTaskDialog({ onStatusChange }) {
   const maintenanceTasks = useSelector(selectMaintenanceTasks);
   const maintenances = useSelector(selectMaintenance);
 
-  const [task, setTask] = useState(null);
+  const [task, setTask] = useState({});
 
   useEffect(() => {
     if (data) {
@@ -86,7 +86,7 @@ export default function ShowMaintenanceTaskDialog({ onStatusChange }) {
               <Select
                 labelId="status"
                 id="status"
-                value={task?.status}
+                value={task ? task.status || "" : ""}
                 label="Estado"
                 onChange={handleStatusChange}
               >
