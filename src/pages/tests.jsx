@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-// import { TestView } from 'src/sections/test/view';
+import { TestView } from 'src/sections/test/view';
 
 // ----------------------------------------------------------------------
 export default function TestPage() {
@@ -10,7 +10,7 @@ export default function TestPage() {
         <title> Test | Sumilan </title>
       </Helmet>
 
-      {/* <TestView /> */}
+      <TestView />
     </>
   );
 }

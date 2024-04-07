@@ -1,22 +1,23 @@
-/* eslint-disable no-unused-vars */
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { es } from 'date-fns/locale';
 import '@bitnoi.se/react-scheduler/dist/style.css';
+// import { Scheduler } from '@bitnoi.se/react-scheduler';
+import { Scheduler } from '@aldabil/react-scheduler';
 import { useDispatch, useSelector } from 'react-redux';
-import { Scheduler } from '@bitnoi.se/react-scheduler';
 
-import { Card, Stack, Button, Container, Typography } from '@mui/material';
+import { Card, Stack, Container, Typography } from '@mui/material';
 
 import { openDialog } from 'src/features/dialogs/dialogsSlice';
-import {
-  fetchEmployees,
-  selectEmployees,
-  selectEmployeeStatus,
-} from 'src/features/employee/employeeSlice';
-import {
-  fetchEquipment,
-  selectEquipment,
-  selectEquipmentStatus,
-} from 'src/features/equipment/equipmentSlice';
+// import {
+//   fetchEmployees,
+//   selectEmployees,
+//   selectEmployeeStatus,
+// } from 'src/features/employee/employeeSlice';
+// import {
+//   fetchEquipment,
+//   selectEquipment,
+//   selectEquipmentStatus,
+// } from 'src/features/equipment/equipmentSlice';
 import {
   fetchMaintenance,
   selectMaintenance,
@@ -28,23 +29,24 @@ import {
   selectMaintenanceTaskStatus,
 } from 'src/features/maintenance/maintenanceTaskSlice';
 
-import Iconify from 'src/components/iconify';
+import TestModal from '../test-modal';
+import TestEvent from '../test-event';
+import TestComponent from '../test-component';
 
 // import Legend from '../task-color-legend';
-import ShowMaintenanceTaskDialog from '../../maintenance/crud/show-maintenance-form-dialog';
 
 export default function TextView() {
   const dispatch = useDispatch();
   const maintenanceTasks = useSelector(selectMaintenanceTasks);
   const maintenanceTaskStatus = useSelector(selectMaintenanceTaskStatus);
-  const equipment = useSelector(selectEquipment);
-  const equipmentStatus = useSelector(selectEquipmentStatus);
-  const employees = useSelector(selectEmployees);
-  const employeeStatus = useSelector(selectEmployeeStatus);
+  // const equipment = useSelector(selectEquipment);
+  // const equipmentStatus = useSelector(selectEquipmentStatus);
+  // const employees = useSelector(selectEmployees);
+  // const employeeStatus = useSelector(selectEmployeeStatus);
   const maintenances = useSelector(selectMaintenance);
   const maintenanceStatus = useSelector(selectMaintenanceStatus);
 
-  const [filterButtonState, setFilterButtonState] = useState(0);
+  // const [filterButtonState, setFilterButtonState] = useState(0);
 
   useEffect(() => {
     if (maintenanceTaskStatus === 'idle') {
@@ -52,17 +54,17 @@ export default function TextView() {
     }
   }, [maintenanceTaskStatus, dispatch]);
 
-  useEffect(() => {
-    if (equipmentStatus === 'idle') {
-      dispatch(fetchEquipment());
-    }
-  }, [equipmentStatus, dispatch]);
+  // useEffect(() => {
+  //   if (equipmentStatus === 'idle') {
+  //     dispatch(fetchEquipment());
+  //   }
+  // }, [equipmentStatus, dispatch]);
 
-  useEffect(() => {
-    if (employeeStatus === 'idle') {
-      dispatch(fetchEmployees());
-    }
-  }, [employeeStatus, dispatch]);
+  // useEffect(() => {
+  //   if (employeeStatus === 'idle') {
+  //     dispatch(fetchEmployees());
+  //   }
+  // }, [employeeStatus, dispatch]);
 
   useEffect(() => {
     if (maintenanceStatus === 'idle') {
@@ -73,7 +75,7 @@ export default function TextView() {
   const getColorByStatus = (status) => {
     const statusColors = {
       Pendiente: 'red',
-      'En Progreso': 'yellow',
+      'En Progreso': 'blue',
       Ejecutado: 'green',
       Cancelado: 'gray',
       Reprogramado: 'orange',
@@ -82,80 +84,107 @@ export default function TextView() {
     return statusColors[status] || 'blue';
   };
 
-  const events = maintenances.map((maintenance) => {
+  // const resources = maintenances.map((maintenance) => {
+  //   const equipmentInfo = equipment.find((eq) => eq.id === maintenance.equipmentId);
+
+  //   return {
+  //     assignee: maintenance.id,
+  //     text: equipmentInfo?.name,
+  //     subtext: maintenance.description,
+  //     avatar: equipmentInfo?.photo,
+  //   };
+  // });
+
+  const events = maintenances.flatMap((maintenance) => {
     const tasks = maintenanceTasks.filter((task) => task.maintenanceId === maintenance.id);
-    const equipmentInfo = equipment.find((eq) => eq.id === maintenance.equipmentId);
+    // const equipmentInfo = equipment.find((eq) => eq.id === maintenance.equipmentId);
 
-    return {
-      id: maintenance.id,
-      label: {
-        icon: equipmentInfo?.photo || 'https://picsum.photos/24',
-        title: equipmentInfo?.name || 'Equipo Desconocido',
-        subtitle: maintenance.description,
-      },
-      data: tasks.map((task) => {
-        const color = getColorByStatus(task.status);
-
-        return {
-          id: task.id,
-          startDate: new Date(task.startDate),
-          endDate: new Date(task.endDate),
-          occupancy: 2,
-          title: task.title,
-          subtitle: task.status,
-          bgColor: color,
-        };
-      }),
-    };
+    return tasks.map((task) => ({
+      event_id: task.id,
+      title: task.title,
+      start: new Date(task.startDate),
+      end: new Date(task.endDate),
+      draggable: false,
+      deletable: false,
+      color: getColorByStatus(task.status),
+    }));
   });
 
-  const handleTileClick = (clickedResource) => {
-    dispatch(openDialog({ dialogType: 'showMaintenanceTask', data: clickedResource.id}));
+  const handleTileClick = (event) => {
+    dispatch(openDialog({ dialogType: 'showMaintenanceTask', data: event.event_id }));
+  };
+
+  const handleCustomViewer = (scheduler) => {
+    console.log(scheduler);
+    if (scheduler.edited) {
+      return <TestModal scheduler={scheduler} />;
+    }
+    return scheduler.close();
   };
 
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Planificador</Typography>
-
-        <Button
-          variant="contained"
-          color="success"
-          startIcon={<Iconify icon="eva:plus-fill" />}
-          //   onClick={handleOpenAddEquipmentDialog}
-        >
-          Añadir Equipo
-        </Button>
       </Stack>
 
-      <Card sx={{ p: 2 }}>
-        <div style={{ height: 480, padding: 20 }}>
-          <Scheduler
-            data={events}
-            //   isLoading={isLoading}
-            onRangeChange={(newRange) => console.log(newRange)}
-            onTileClick={handleTileClick}
-            onItemClick={(item) => console.log(item)}
-            onFilterData={() => {
-              // Some filtering logic...
-              setFilterButtonState(1);
-            }}
-            onClearFilterData={() => {
-              // Some clearing filters logic...
-              setFilterButtonState(0);
-            }}
-            config={{
-              zoom: 1,
-              filterButtonState,
-              includeTakenHoursOnWeekendsInDayView: true,
-            }}
-            lang="es"
-          />
-        </div>
+      <Card sx={{ p: 4, maxHeight: 580, overflowY: 'auto' }}>
+        <Scheduler
+          events={events}
+          view="month"
+          height={420}
+          month={{
+            startHour: 0,
+            endHour: 23,
+          }}
+          day={{
+            startHour: 0,
+            endHour: 23,
+          }}
+          week={{
+            startHour: 0,
+            endHour: 23,
+          }}
+          translations={{
+            navigation: {
+              month: 'Mes',
+              week: 'Semana',
+              day: 'Día',
+              today: 'Hoy',
+              agenda: 'Agenda',
+            },
+            form: {
+              addTitle: 'Agregar Evento',
+              editTitle: 'Editar Evento',
+              confirm: 'Confirmar',
+              delete: 'Eliminar',
+              cancel: 'Cancelar',
+            },
+            event: {
+              title: 'Título',
+              start: 'Inicio',
+              end: 'Fin',
+              allDay: 'Todo el día',
+            },
+            validation: {
+              required: 'Campo obligatorio',
+              invalidEmail: 'Correo electrónico inválido',
+              onlyNumbers: 'Solo se permiten números',
+              min: 'Mínimo {{min}} caracteres',
+              max: 'Máximo {{max}} caracteres',
+            },
+            moreEvents: 'Más...',
+            noDataToDisplay: 'No hay datos para mostrar',
+            loading: 'Cargando...',
+          }}
+          onEventClick={handleTileClick}
+          locale={es}
+          viewerExtraComponent={(task) => <TestComponent id={task.event_id} />}
+          customEditor={handleCustomViewer}
+          eventRenderer={({ event, ...props }) => <TestEvent event={event} {...props} />}
+          draggable={false}
+        />
       </Card>
-      {/* <Legend /> */}
-
-      <ShowMaintenanceTaskDialog />
     </Container>
   );
 }

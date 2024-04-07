@@ -20,6 +20,7 @@
     "vite:build": "vite build"
   },
   "dependencies": {
+    "@aldabil/react-scheduler": "^2.8.4",
     "@bitnoi.se/react-scheduler": "^0.1.5",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
@@ -35,7 +36,6 @@
     "@mui/lab": "^5.0.0-alpha.147",
     "@mui/material": "^5.14.12",
     "@mui/x-data-grid": "^7.0.0",
-    "@mui/x-date-pickers": "^6.19.8",
     "@reduxjs/toolkit": "^2.2.1",
     "apexcharts": "^3.43.0",
     "axios": "^1.6.7",
