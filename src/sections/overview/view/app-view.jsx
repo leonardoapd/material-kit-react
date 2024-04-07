@@ -89,11 +89,11 @@ export default function AppView() {
           />
         </Grid>
 
-        <Grid xs={12} md={6} lg={8}>
+        <Grid xs={12} md={8} lg={8}>
           <AppPlanner title="Planificador de mantenimiento" subheader="(+43%) than last year" />
         </Grid>
 
-        <Grid xs={12} md={6} lg={4}>
+        <Grid xs={12} md={4} lg={4}>
           <AppMaintenanceCompliance
             title="Cumplimiento de mantenimiento"
             subheader={`Year average: ${average.toFixed(1)}%`}

@@ -1,13 +1,14 @@
+/* eslint-disable no-unused-vars */
 import moment from 'moment';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import allLocales from '@fullcalendar/core/locales-all';
-import interactionPlugin from '@fullcalendar/interaction';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
+// import FullCalendar from '@fullcalendar/react';
+// import dayGridPlugin from '@fullcalendar/daygrid';
+// import timeGridPlugin from '@fullcalendar/timegrid';
+// import allLocales from '@fullcalendar/core/locales-all';
+// import interactionPlugin from '@fullcalendar/interaction';
+// import 'react-big-calendar/lib/css/react-big-calendar.css';
 // import { Calendar, momentLocalizer } from 'react-big-calendar';
 
 import Box from '@mui/material/Box';
@@ -171,7 +172,7 @@ export default function MaintenanceCalendarEvents({
       <Card {...other}>
         <CardHeader title={title} subheader={subheader} />
         <Box sx={{ p: 3, flexGrow: 1 }}>
-          <FullCalendar
+          {/* <FullCalendar
             locales={allLocales}
             locale="es"
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -203,7 +204,7 @@ export default function MaintenanceCalendarEvents({
           eventChange={function(){}}
           eventRemove={function(){}}
           */
-          />
+          /> */}
         </Box>
       </Card>
 

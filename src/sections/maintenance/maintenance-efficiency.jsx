@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import GaugeChart from 'react-gauge-chart';
+// import GaugeChart from 'react-gauge-chart';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -8,14 +8,14 @@ import CardHeader from '@mui/material/CardHeader';
 // ----------------------------------------------------------------------
 
 export default function MaintenanceEfficiency({ title, subheader, chart, ...other }) {
-  const { percent } = chart;
+  // const { percent } = chart;
 
   return (
     <Card {...other} sx={{ height: '100%' }}>
       <CardHeader title={title} subheader={subheader} />
 
       <Box sx={{ p: 3, pb: 1 }}>
-        <GaugeChart
+        {/* <GaugeChart
           id="gauge-chart5"
           nrOfLevels={420}
           arcsLength={[0.6, 0.2, 0.2]}
@@ -26,7 +26,7 @@ export default function MaintenanceEfficiency({ title, subheader, chart, ...othe
           animate
           cornerRadius={6}
           needleColor="#345243"
-        />
+        /> */}
       </Box>
     </Card>
   );
