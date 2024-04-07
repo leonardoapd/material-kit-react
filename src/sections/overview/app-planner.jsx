@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { es } from 'date-fns/locale';
-import '@bitnoi.se/react-scheduler/dist/style.css';
 import { Scheduler } from '@aldabil/react-scheduler';
 import { useDispatch, useSelector } from 'react-redux';
 
