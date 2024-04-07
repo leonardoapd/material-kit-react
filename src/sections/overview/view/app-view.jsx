@@ -90,7 +90,7 @@ export default function AppView() {
         </Grid>
 
         <Grid xs={12} md={8} lg={8}>
-          <AppPlanner title="Planificador de mantenimiento" subheader="(+43%) than last year" />
+          {/* <AppPlanner title="Planificador de mantenimiento" subheader="(+43%) than last year" /> */}
         </Grid>
 
         <Grid xs={12} md={4} lg={4}>
