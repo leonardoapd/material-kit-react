@@ -1,17 +1,14 @@
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
+import { es } from 'date-fns/locale';
 import '@bitnoi.se/react-scheduler/dist/style.css';
+import { Scheduler } from '@aldabil/react-scheduler';
 import { useDispatch, useSelector } from 'react-redux';
-import { Scheduler } from '@bitnoi.se/react-scheduler';
 
-import { Card, CardHeader } from '@mui/material';
+import { Box, Card, CardHeader } from '@mui/material';
 
 import { openDialog } from 'src/features/dialogs/dialogsSlice';
-import {
-  fetchEquipment,
-  selectEquipment,
-  selectEquipmentStatus,
-} from 'src/features/equipment/equipmentSlice';
+import { fetchMaintenanceComplience } from 'src/features/charts/chartsSlice';
 import {
   fetchMaintenance,
   selectMaintenance,
@@ -23,31 +20,25 @@ import {
   selectMaintenanceTaskStatus,
 } from 'src/features/maintenance/maintenanceTaskSlice';
 
-import Legend from './task-color-legend';
-// import Iconify from 'src/components/iconify';
+import {
+  EventPopover,
+  RenderedEvent,
+  TaskColorLegend,
+  EditEventDialog,
+} from 'src/components/planner';
 
 export default function AppPlanner({ title, subheader }) {
   const dispatch = useDispatch();
   const maintenanceTasks = useSelector(selectMaintenanceTasks);
   const maintenanceTaskStatus = useSelector(selectMaintenanceTaskStatus);
-  const equipment = useSelector(selectEquipment);
-  const equipmentStatus = useSelector(selectEquipmentStatus);
   const maintenances = useSelector(selectMaintenance);
   const maintenanceStatus = useSelector(selectMaintenanceStatus);
-
-  const [filterButtonState, setFilterButtonState] = useState(0);
 
   useEffect(() => {
     if (maintenanceTaskStatus === 'idle') {
       dispatch(fetchMaintenanceTasks());
     }
   }, [maintenanceTaskStatus, dispatch]);
-
-  useEffect(() => {
-    if (equipmentStatus === 'idle') {
-      dispatch(fetchEquipment());
-    }
-  }, [equipmentStatus, dispatch]);
 
   useEffect(() => {
     if (maintenanceStatus === 'idle') {
@@ -67,67 +58,101 @@ export default function AppPlanner({ title, subheader }) {
     return statusColors[status] || 'blue';
   };
 
-  const events = maintenances.map((maintenance) => {
+  const events = maintenances.flatMap((maintenance) => {
     const tasks = maintenanceTasks.filter((task) => task.maintenanceId === maintenance.id);
-    const equipmentInfo = equipment.find((eq) => eq.id === maintenance.equipmentId);
 
-    return {
-      id: maintenance.id,
-      label: {
-        icon: equipmentInfo?.photo || 'https://picsum.photos/24',
-        title: equipmentInfo?.name || 'Equipo Desconocido',
-        subtitle: maintenance.type,
-      },
-      data: tasks.map((task) => {
-        const color = getColorByStatus(task.status);
-
-        return {
-          id: task.id,
-          startDate: new Date(task.startDate),
-          endDate: new Date(task.endDate),
-          occupancy: 2,
-          title: task.title,
-          subtitle: task.status,
-          bgColor: color,
-        };
-      }),
-    };
+    return tasks.map((task) => ({
+      event_id: task.id,
+      title: task.title,
+      start: new Date(task.startDate),
+      end: new Date(task.endDate),
+      draggable: false,
+      deletable: false,
+      color: getColorByStatus(task.status),
+    }));
   });
 
-  const handleTileClick = (clickedResource) => {
-    dispatch(openDialog({ dialogType: 'showMaintenanceTask', data: clickedResource.id }));
+  const handleTileClick = (event) => {
+    dispatch(openDialog({ dialogType: 'showMaintenanceTask', data: event.event_id }));
+  };
+
+  const handleCustomViewer = (scheduler) => {
+    console.log(scheduler);
+    if (scheduler.edited) {
+      return <EditEventDialog scheduler={scheduler} />;
+    }
+    return scheduler.close();
   };
 
   return (
     <>
-      <Card>
-        <CardHeader title={title} subheader={subheader} sx={{ mb: 5 }} />
-        <div style={{ height: 380, padding: 20 }}>
+      <Card sx={{ maxHeight: 480, overflowY: 'auto' }}>
+        <CardHeader title={title} subheader={subheader} sx={{ mb: 2 }} />
+        <Box sx={{ p: 2 }}>
           <Scheduler
-            data={events}
-            //   isLoading={isLoading}
-            // onRangeChange={(newRange) => console.log(newRange)}
-            onTileClick={handleTileClick}
-            // onItemClick={(item) => console.log(item)}
-            onFilterData={() => {
-              // Some filtering logic...
-              setFilterButtonState(1);
+            events={events}
+            view="month"
+            height={420}
+            month={{
+              startHour: 0,
+              endHour: 23,
             }}
-            onClearFilterData={() => {
-              // Some clearing filters logic...
-              setFilterButtonState(0);
+            day={{
+              startHour: 0,
+              endHour: 23,
             }}
-            config={{
-              zoom: 1,
-              filterButtonState,
-              includeTakenHoursOnWeekendsInDayView: true,
+            week={{
+              startHour: 0,
+              endHour: 23,
             }}
-            lang="es"
+            translations={{
+              navigation: {
+                month: 'Mes',
+                week: 'Semana',
+                day: 'Día',
+                today: 'Hoy',
+                agenda: 'Agenda',
+              },
+              form: {
+                addTitle: 'Agregar Evento',
+                editTitle: 'Editar Evento',
+                confirm: 'Confirmar',
+                delete: 'Eliminar',
+                cancel: 'Cancelar',
+              },
+              event: {
+                title: 'Título',
+                start: 'Inicio',
+                end: 'Fin',
+                allDay: 'Todo el día',
+              },
+              validation: {
+                required: 'Campo obligatorio',
+                invalidEmail: 'Correo electrónico inválido',
+                onlyNumbers: 'Solo se permiten números',
+                min: 'Mínimo {{min}} caracteres',
+                max: 'Máximo {{max}} caracteres',
+              },
+              moreEvents: 'Más...',
+              noDataToDisplay: 'No hay datos para mostrar',
+              loading: 'Cargando...',
+            }}
+            onEventClick={handleTileClick}
+            locale={es}
+            viewerExtraComponent={(task) => (
+              <EventPopover
+                id={task.event_id}
+                onStatusChange={() => dispatch(fetchMaintenanceComplience())}
+              />
+            )}
+            customEditor={handleCustomViewer}
+            eventRenderer={({ event, ...props }) => <RenderedEvent event={event} {...props} />}
+            draggable={false}
           />
-        </div>
+        </Box>
       </Card>
 
-      <Legend />
+      <TaskColorLegend />
     </>
   );
 }
