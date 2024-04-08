@@ -58,7 +58,7 @@ export default function AppView() {
             title="Mantenimientos Completados"
             total={1}
             color="success"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_bag.png" />}
+            icon={<img alt="icon" src="./assets/icons/glass/ic_glass_bag.png" />}
           />
         </Grid>
 
@@ -67,7 +67,7 @@ export default function AppView() {
             title="$ Total Gastado"
             total={1352831}
             color="info"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
+            icon={<img alt="icon" src="./assets/icons/glass/ic_glass_users.png" />}
           />
         </Grid>
 
@@ -76,7 +76,7 @@ export default function AppView() {
             title="Equipos Comprados"
             total={2}
             color="warning"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
+            icon={<img alt="icon" src="./assets/icons/glass/ic_glass_buy.png" />}
           />
         </Grid>
 
@@ -85,12 +85,12 @@ export default function AppView() {
             title="Mantenimientos el próximo mes"
             total={4}
             color="error"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
+            icon={<img alt="icon" src="./assets/icons/glass/ic_glass_message.png" />}
           />
         </Grid>
 
         <Grid xs={12} md={8} lg={8}>
-          {/* <AppPlanner title="Planificador de mantenimiento" subheader="(+43%) than last year" /> */}
+          <AppPlanner title="Planificador de mantenimiento" subheader="(+43%) than last year" />
         </Grid>
 
         <Grid xs={12} md={4} lg={4}>

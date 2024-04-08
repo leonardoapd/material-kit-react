@@ -76,7 +76,6 @@ export default function AppPlanner({ title, subheader }) {
   };
 
   const handleCustomViewer = (scheduler) => {
-    console.log(scheduler);
     if (scheduler.edited) {
       return <EditEventDialog scheduler={scheduler} />;
     }
