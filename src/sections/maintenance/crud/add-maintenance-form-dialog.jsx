@@ -61,6 +61,7 @@ export default function AddMaintenanceDialog({ selected = null }) {
       ...addForm,
       [event.target.name]: event.target.value,
     });
+    console.log(addForm);
   };
 
   const handleConfirm = async () => {
@@ -96,9 +97,13 @@ export default function AddMaintenanceDialog({ selected = null }) {
                 label="Equipo"
                 options={inventory}
                 getOptionLabel={(option) => option.name}
-                onChange={handleChange}
+                onChange={(event, value) => {
+                  setAddForm({
+                    ...addForm,
+                    equipmentId: value ? value.id : '', 
+                  });
+                }}
                 value={inventory.find((item) => item.id === equipmentId) || null}
-                name="equipment"
                 renderInput={(params) => (
                   <TextField {...params} label="Equipo" variant="outlined" />
                 )}
