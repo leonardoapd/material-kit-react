@@ -7,6 +7,8 @@ import Typography from '@mui/material/Typography';
 
 import {
   selectChartsLoading,
+  fetchMaintenanceCounts,
+  selectMaintenanceCounts,
   fetchMaintenanceComplience,
   selectMaintenanceComplience,
 } from 'src/features/charts/chartsSlice';
@@ -32,19 +34,22 @@ import AppMaintenanceCompliance from '../app-maintenance-compliance';
 export default function AppView() {
   const dispatch = useDispatch();
   const monthlyCompletionRates = useSelector(selectMaintenanceComplience);
+  const maintenanceCounts = useSelector(selectMaintenanceCounts);
   const chartsLoading = useSelector(selectChartsLoading);
-
-  // const [monthlyCompletionRates, setMonthlyCompletionRates] = useState({});
 
   useEffect(() => {
     if (chartsLoading === 'idle') {
       dispatch(fetchMaintenanceComplience());
+      dispatch(fetchMaintenanceCounts());
     }
   }, [chartsLoading, dispatch]);
 
   const labels = Object.keys(monthlyCompletionRates);
   const series = Object.values(monthlyCompletionRates).map((value) => (value * 100).toFixed(1));
   const average = series.reduce((acc, value) => acc + parseFloat(value), 0) / series.length;
+
+  const countsLabels = Object.keys(maintenanceCounts);
+  const countsSeries = Object.values(maintenanceCounts);
 
   return (
     <Container maxWidth="xl">
@@ -53,41 +58,24 @@ export default function AppView() {
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Mantenimientos Completados"
-            total={1}
-            color="success"
-            icon={<img alt="icon" src="./assets/icons/glass/ic_glass_bag.png" />}
-          />
-        </Grid>
-
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="$ Total Gastado"
-            total={1352831}
-            color="info"
-            icon={<img alt="icon" src="./assets/icons/glass/ic_glass_users.png" />}
-          />
-        </Grid>
-
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Equipos Comprados"
-            total={2}
-            color="warning"
-            icon={<img alt="icon" src="./assets/icons/glass/ic_glass_buy.png" />}
-          />
-        </Grid>
-
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Mantenimientos el próximo mes"
-            total={4}
-            color="error"
-            icon={<img alt="icon" src="./assets/icons/glass/ic_glass_message.png" />}
-          />
-        </Grid>
+        {countsLabels.map((label, index) => (
+          <Grid key={index} xs={12} sm={6} md={3}>
+            <AppWidgetSummary
+              title={label}
+              total={countsSeries[index]}
+              color={['info', 'warning', 'success'][index]}
+              icon={
+                <img
+                  alt="icon"
+                  src={`./assets/icons/glass/ic_glass_${label
+                    .replace(/\s/g, '_')
+                    .replace(/\.$/, '')
+                    .toLowerCase()}.png`}
+                />
+              }
+            />
+          </Grid>
+        ))}
 
         <Grid xs={12} md={8} lg={8}>
           <AppPlanner title="Planificador de mantenimiento" subheader="(+43%) than last year" />
