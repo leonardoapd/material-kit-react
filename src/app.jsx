@@ -1,6 +1,7 @@
 /* eslint-disable perfectionist/sort-imports */
 import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { SnackbarProvider } from 'notistack';
 import 'src/global.css';
 
 import { useScrollToTop } from 'src/hooks/use-scroll-to-top';
@@ -18,11 +19,13 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <Router />
-        </ThemeProvider>
-      </QueryClientProvider>
+      <SnackbarProvider maxSnack={3}>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider>
+            <Router />
+          </ThemeProvider>
+        </QueryClientProvider>
+      </SnackbarProvider>
     </Provider>
   );
 }

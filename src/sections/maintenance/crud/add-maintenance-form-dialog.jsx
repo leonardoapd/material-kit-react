@@ -61,11 +61,9 @@ export default function AddMaintenanceDialog({ selected = null }) {
       ...addForm,
       [event.target.name]: event.target.value,
     });
-    console.log(addForm);
   };
 
   const handleConfirm = async () => {
-    console.log(addForm);
     await dispatch(addMaintenance(addForm));
     handleClose();
     dispatch(fetchMaintenanceTasks());

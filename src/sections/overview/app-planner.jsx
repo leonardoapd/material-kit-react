@@ -7,7 +7,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Card, CardHeader } from '@mui/material';
 
 import { openDialog } from 'src/features/dialogs/dialogsSlice';
-import { fetchMaintenanceComplience } from 'src/features/charts/chartsSlice';
+import {
+  fetchMaintenanceCounts,
+  fetchMaintenanceComplience,
+} from 'src/features/charts/chartsSlice';
 import {
   fetchMaintenance,
   selectMaintenance,
@@ -49,7 +52,7 @@ export default function AppPlanner({ title, subheader }) {
     const statusColors = {
       Pendiente: 'red',
       'En Progreso': 'blue',
-      Ejecutado: 'green',
+      Ejecutado: '#43A047',
       Cancelado: 'gray',
       Reprogramado: 'orange',
     };
@@ -80,6 +83,12 @@ export default function AppPlanner({ title, subheader }) {
       return <EditEventDialog scheduler={scheduler} />;
     }
     return scheduler.close();
+  };
+
+  const handleStatusChange = () => {
+    console.log('status changed');
+    dispatch(fetchMaintenanceCounts());
+    dispatch(fetchMaintenanceComplience());
   };
 
   return (
@@ -138,10 +147,7 @@ export default function AppPlanner({ title, subheader }) {
             onEventClick={handleTileClick}
             locale={es}
             viewerExtraComponent={(task) => (
-              <EventPopover
-                id={task.event_id}
-                onStatusChange={() => dispatch(fetchMaintenanceComplience())}
-              />
+              <EventPopover id={task.event_id} onStatusChange={handleStatusChange} />
             )}
             customEditor={handleCustomViewer}
             eventRenderer={({ event, ...props }) => <RenderedEvent event={event} {...props} />}

@@ -17,7 +17,6 @@ export const getMaintenanceTypes = async () => {
 
 export const getMaintenanceCounts = async () => {
   const response = await apiClient.get('maintenancechart/maintenance-counts');
-  console.log(response.data);
   return response.data;
 };
 

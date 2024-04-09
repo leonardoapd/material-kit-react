@@ -45,6 +45,9 @@ export const maintenanceTaskSlice = createSlice({
         state.maintenanceTasks = state.maintenanceTasks.map((maintenanceTask) =>
           maintenanceTask.id === action.payload.id ? action.payload : maintenanceTask
         );
+      })
+      .addCase(editMaintenanceTask.rejected, (state, action) => {
+        state.error = action.error.message;
       });
   },
 });
