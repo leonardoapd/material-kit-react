@@ -20,25 +20,30 @@ import {
 } from '@mui/material';
 
 import { selectEquipment } from 'src/features/equipment/equipmentSlice';
-import { addMaintenance } from 'src/features/maintenance/maintenanceSlice';
-import { closeDialog, selectDialogOpen } from 'src/features/dialogs/dialogsSlice';
 import { fetchMaintenanceTasks } from 'src/features/maintenance/maintenanceTaskSlice';
 import { selectUiParametersByName } from 'src/features/uiparameters/uiParametersSlice';
+import { editMaintenance, selectMaintenance } from 'src/features/maintenance/maintenanceSlice';
+import { closeDialog, selectDialogOpen, selectDialogData } from 'src/features/dialogs/dialogsSlice';
 import {
   fetchMaintenanceCounts,
   fetchMaintenanceComplience,
 } from 'src/features/charts/chartsSlice';
 
-export default function AddMaintenanceDialog({ selected = null }) {
+export default function EditMaintenanceFormDialog() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const open = useSelector((state) => selectDialogOpen(state, 'addMaintenance'));
+
+  const maintenances = useSelector(selectMaintenance);
+  const open = useSelector((state) => selectDialogOpen(state, 'editMaintenance'));
   const inventory = useSelector(selectEquipment);
+  const maintenanceId = useSelector((state) => selectDialogData(state, 'editMaintenance'));
   const maintenanceTypes = useSelector((state) =>
     selectUiParametersByName(state, 'TipoMantenimiento')
   );
 
-  const [addForm, setAddForm] = useState({
+  const maintenance = maintenances.find((item) => item.id === maintenanceId);
+
+  const [editForm, setEditForm] = useState({
     equipmentId: '',
     type: '',
     description: '',
@@ -47,28 +52,28 @@ export default function AddMaintenanceDialog({ selected = null }) {
     estimatedDuration: 0,
   });
 
-  const { equipmentId, type, description, firstMaintenanceTaskDate, frequency, estimatedDuration } =
-    addForm;
-
   useEffect(() => {
-    if (selected) {
-      setAddForm({
-        ...addForm,
-        equipmentId: selected,
+    if (maintenance) {
+      setEditForm({
+        equipmentId: maintenance.equipmentId,
+        type: maintenance.type,
+        description: maintenance.description,
+        firstMaintenanceTaskDate: maintenance.firstMaintenanceTaskDate,
+        frequency: maintenance.frequency,
+        estimatedDuration: maintenance.estimatedDuration,
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected]);
+  }, [maintenance]);
 
   const handleChange = (event) => {
-    setAddForm({
-      ...addForm,
+    setEditForm({
+      ...editForm,
       [event.target.name]: event.target.value,
     });
   };
 
   const handleConfirm = async () => {
-    await dispatch(addMaintenance(addForm));
+    await dispatch(editMaintenance({ id: maintenanceId, ...editForm }));
     handleClose();
     dispatch(fetchMaintenanceTasks());
     dispatch(fetchMaintenanceCounts());
@@ -77,21 +82,20 @@ export default function AddMaintenanceDialog({ selected = null }) {
   };
 
   const handleClose = () => {
-    setAddForm((prev) => ({
-      ...prev,
-      equipmentId: selected,
+    setEditForm({
+      equipmentId: '',
       type: '',
       description: '',
       firstMaintenanceTaskDate: '',
       frequency: '',
-      estimatedDuration: 0,
-    }));
-    dispatch(closeDialog({ dialogType: 'addMaintenance' }));
+      estimatedDuration: '',
+    });
+    dispatch(closeDialog({ dialogType: 'editMaintenance' }));
   };
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle id="alert-dialog-title">Programar Mantenimiento</DialogTitle>
+      <DialogTitle id="alert-dialog-title">Editar Mantenimiento</DialogTitle>
       <DialogContent style={{ paddingTop: 8 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -102,12 +106,12 @@ export default function AddMaintenanceDialog({ selected = null }) {
                 options={inventory}
                 getOptionLabel={(option) => option.name}
                 onChange={(event, value) => {
-                  setAddForm({
-                    ...addForm,
-                    equipmentId: value ? value.id : '', 
+                  setEditForm({
+                    ...editForm,
+                    equipmentId: value ? value.id : '',
                   });
                 }}
-                value={inventory.find((item) => item.id === equipmentId) || null}
+                value={inventory.find((item) => item.id === editForm.equipmentId) || null}
                 renderInput={(params) => (
                   <TextField {...params} label="Equipo" variant="outlined" />
                 )}
@@ -120,7 +124,7 @@ export default function AddMaintenanceDialog({ selected = null }) {
                   id="maintenance-type"
                   label="Tipo de Mantenimiento"
                   variant="outlined"
-                  value={type}
+                  value={editForm.type}
                   onChange={handleChange}
                   name="type"
                   fullWidth
@@ -143,7 +147,7 @@ export default function AddMaintenanceDialog({ selected = null }) {
                   variant="outlined"
                   type="datetime-local"
                   InputLabelProps={{ shrink: true }}
-                  value={firstMaintenanceTaskDate}
+                  value={editForm.firstMaintenanceTaskDate}
                   onChange={handleChange}
                   name="firstMaintenanceTaskDate"
                 />
@@ -154,7 +158,7 @@ export default function AddMaintenanceDialog({ selected = null }) {
                     id="maintenance-frequency"
                     label="Frecuencia de Mantenimiento"
                     variant="outlined"
-                    value={frequency}
+                    value={editForm.frequency}
                     onChange={handleChange}
                     name="frequency"
                     fullWidth
@@ -176,7 +180,7 @@ export default function AddMaintenanceDialog({ selected = null }) {
                   placeholder="Horas"
                   onChange={handleChange}
                   name="estimatedDuration"
-                  value={estimatedDuration}
+                  value={editForm.estimatedDuration}
                 />
               </Stack>
               <TextField
@@ -185,7 +189,7 @@ export default function AddMaintenanceDialog({ selected = null }) {
                 variant="outlined"
                 placeholder="Escriba la descripcion del mantenimiento"
                 multiline
-                value={description}
+                value={editForm.description}
                 onChange={handleChange}
                 name="description"
                 rows={7.2}
@@ -199,15 +203,13 @@ export default function AddMaintenanceDialog({ selected = null }) {
           Cancelar
         </Button>
         <Button onClick={handleConfirm} color="success" size="small" autoFocus>
-          Programar
+          Guardar
         </Button>
       </DialogActions>
     </Dialog>
   );
 }
 
-AddMaintenanceDialog.propTypes = {
-  onClose: PropTypes.func,
-  onConfirm: PropTypes.func,
-  selected: PropTypes.string,
+EditMaintenanceFormDialog.propTypes = {
+  maintenanceId: PropTypes.string.isRequired,
 };

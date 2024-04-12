@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import { openDialog } from 'src/features/dialogs/dialogsSlice';
 
-import ActionMenu from '../../components/action-menu/action-menu';
+import ActionMenu from 'src/components/action-menu/action-menu';
 
 export default function MaintenanceActionMenu({ equipmentId }) {
     const dispatch = useDispatch();

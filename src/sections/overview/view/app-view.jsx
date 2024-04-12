@@ -38,7 +38,6 @@ export default function AppView() {
   const chartsLoading = useSelector(selectChartsLoading);
 
   useEffect(() => {
-    console.log('fetching data');
     if (chartsLoading === 'idle') {
       dispatch(fetchMaintenanceComplience());
       dispatch(fetchMaintenanceCounts());

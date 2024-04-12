@@ -10,36 +10,29 @@ import {
   DialogContentText,
 } from '@mui/material';
 
-import { removeEquipment } from 'src/features/equipment/equipmentSlice';
+import { removeMaintenance } from 'src/features/maintenance/maintenanceSlice';
 import { closeDialog, selectDialogOpen, selectDialogData } from 'src/features/dialogs/dialogsSlice';
-import {
-  fetchMaintenanceCounts,
-  fetchMaintenanceComplience,
-} from 'src/features/charts/chartsSlice';
 
 export default function DeleteConfirmationDialog() {
   const dispatch = useDispatch();
-  // const open = useSelector(selectDeleteEquipmentDialogOpen);
-  // const data = useSelector(selectDeleteEquipmentDialogData);
-  const open = useSelector((state) => selectDialogOpen(state, 'deleteEquipment'));
-  const data = useSelector((state) => selectDialogData(state, 'deleteEquipment'));
+
+  const open = useSelector((state) => selectDialogOpen(state, 'deleteMaintenance'));
+  const data = useSelector((state) => selectDialogData(state, 'deleteMaintenance'));
   const id = data;
 
   const handleClose = () => {
-    dispatch(closeDialog({ dialogType: 'deleteEquipment' }));
+    dispatch(closeDialog({ dialogType: 'deleteMaintenance' }));
   };
 
   const handleConfirm = () => {
-    dispatch(removeEquipment(id));
-    dispatch(fetchMaintenanceCounts());
-    dispatch(fetchMaintenanceComplience());
+    dispatch(removeMaintenance(id));
     handleClose();
   };
 
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle id="alert-dialog-title">
-        Estas seguro que deseas eliminar este equipo?
+        Estas seguro que deseas eliminar este mantenimiento?
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">

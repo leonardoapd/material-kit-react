@@ -24,6 +24,8 @@ import LoadingSkeleton from 'src/components/loading-skeleton';
 import MaintenanceActionMenu from '../maintenance-action-menu';
 import MaintenanceTableToolbar from '../maintenance-table-toolbar';
 import AddMaintenanceDialog from '../crud/add-maintenance-form-dialog';
+import EditMaintenanceFormDialog from '../crud/edit-maintenance-form-dialog';
+import DeleteConfirmationDialog from '../crud/delete-maintenance-confirmation-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -31,19 +33,24 @@ const columns = [
   { field: 'type', headerName: 'Tipo', width: 100 },
   {
     field: 'equipmentName',
-    headerName: 'Nombre del Equipo',
+    headerName: 'Equipo',
     width: 200,
+    headerAlign: 'center',
   },
-  { field: 'description', headerName: 'Descripción', width: 260 },
+  { field: 'description', headerName: 'Descripción', width: 260, headerAlign: 'center' },
   {
     field: 'nextMaintenanceTaskDate',
     headerName: 'Próximo Mantenimiento',
     width: 220,
+    headerAlign: 'center',
+    align: 'center',
   },
   {
     field: 'frequency',
     headerName: 'Frecuencia en Dias',
     width: 180,
+    headerAlign: 'center',
+    align: 'center',
   },
   {
     field: 'actions',
@@ -191,7 +198,7 @@ export default function MaintenanceView() {
                     display: 'flex',
                     alignItems: 'center',
                     padding: '8px 4px',
-                  }
+                  },
                 }}
                 getRowHeight={() => 'auto'}
               />
@@ -207,6 +214,10 @@ export default function MaintenanceView() {
       </Card>
 
       <AddMaintenanceDialog />
+
+      <DeleteConfirmationDialog />
+
+      <EditMaintenanceFormDialog />
     </Container>
   );
 }

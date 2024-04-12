@@ -33,7 +33,7 @@ import AddMaintenanceDialog from '../../maintenance/crud/add-maintenance-form-di
 // ----------------------------------------------------------------------
 
 const columns = [
-  { field: 'code', headerName: 'Código', width: 140 },
+  { field: 'code', headerName: 'Código', width: 140, headerAlign: 'center', align: 'center' },
   {
     field: 'name',
     headerName: 'Equipo',
@@ -41,21 +41,44 @@ const columns = [
     renderCell: (params) => (
       <EquipmentPhotoNameCell photo={params.row.photo} name={params.row.name} />
     ),
+    headerAlign: 'center',
   },
-  { field: 'location', headerName: 'Ubicación', width: 100 },
+  {
+    field: 'location',
+    headerName: 'Ubicación',
+    width: 100,
+    headerAlign: 'center',
+    align: 'center',
+  },
   {
     field: 'purchaseDate',
     headerName: 'Fecha de Compra',
     width: 180,
     headerClassName: 'header-style',
+    headerAlign: 'center',
+    align: 'center',
   },
-  { field: 'serialNumber', headerName: 'Serial', width: 140 },
-  { field: 'model', headerName: 'Modelo', width: 140 },
-  { field: 'category', headerName: 'Categoría', width: 160 },
+  {
+    field: 'serialNumber',
+    headerName: 'Serial',
+    width: 140,
+    headerAlign: 'center',
+    align: 'center',
+  },
+  { field: 'model', headerName: 'Modelo', width: 140, headerAlign: 'center', align: 'center' },
+  {
+    field: 'category',
+    headerName: 'Categoría',
+    width: 160,
+    headerAlign: 'center',
+    align: 'center',
+  },
   {
     field: 'accountableName',
     headerName: 'Responsable',
     width: 160,
+    headerAlign: 'center',
+    align: 'center',
   },
   {
     field: 'actions',

@@ -1,23 +1,28 @@
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
 
-import ActionMenu from '../../components/action-menu/action-menu';
+import { openDialog } from 'src/features/dialogs/dialogsSlice';
+
+import ActionMenu from 'src/components/action-menu/action-menu';
 
 export default function MaintenanceActionMenu({ maintenanceId }) {
+  const dispatch = useDispatch();
+
   const handleShowInfo = () => {
     console.log('Mostrar información');
   };
 
-  const handleEdit = () => {
-    console.log('Editar');
+  const handleEdit = (id) => {
+    dispatch(openDialog({ dialogType: 'editMaintenance', data: id }));
   };
 
-  const handleDelete = () => {
-    console.log('Eliminar');
+  const handleDelete = (id) => {
+    dispatch(openDialog({ dialogType: 'deleteMaintenance', data: id }));
   };
 
   const maintenanceActions = [
     {
-      label: 'Ver información',
+      label: 'Ver tareas',
       icon: 'eva:eye-fill',
       onClick: handleShowInfo,
     },

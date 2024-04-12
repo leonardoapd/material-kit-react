@@ -86,7 +86,6 @@ export default function AppPlanner({ title, subheader }) {
   };
 
   const handleStatusChange = () => {
-    console.log('status changed');
     dispatch(fetchMaintenanceCounts());
     dispatch(fetchMaintenanceComplience());
   };
