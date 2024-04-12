@@ -211,5 +211,5 @@ export default function EditMaintenanceFormDialog() {
 }
 
 EditMaintenanceFormDialog.propTypes = {
-  maintenanceId: PropTypes.string.isRequired,
+  maintenanceId: PropTypes.string,
 };

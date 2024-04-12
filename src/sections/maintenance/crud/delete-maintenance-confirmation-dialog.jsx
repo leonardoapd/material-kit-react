@@ -36,7 +36,7 @@ export default function DeleteConfirmationDialog() {
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          Esta acción no se puede deshacer.
+          Esta acción tambien eliminará las tareas asociadas a este mantenimiento.
         </DialogContentText>
       </DialogContent>
       <DialogActions>

@@ -1,0 +1,1 @@
+export { default as MaintenanceTaskView } from './maintenance-task-view';
