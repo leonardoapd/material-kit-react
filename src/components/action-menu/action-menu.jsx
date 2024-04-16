@@ -25,7 +25,7 @@ export default function ActionMenu({ actions, itemId }) {
   return (
     <div>
       <IconButton onClick={handleClick}>
-        <Iconify icon="material-symbols:expand-circle-down-outline-rounded" />
+        <Iconify icon="iconamoon:menu-kebab-horizontal-bold" />
       </IconButton>
       <Popover
         open={open}
@@ -41,7 +41,7 @@ export default function ActionMenu({ actions, itemId }) {
         }}
       >
         {actions.map((action, index) => (
-          <MenuItem key={index} onClick={() => handleAction(action)} sx={{color: action.color}}>
+          <MenuItem key={index} onClick={() => handleAction(action)} sx={{ color: action.color }}>
             {action.icon && <Iconify icon={action.icon} sx={{ mr: 2 }} />}
             {action.label}
           </MenuItem>

@@ -44,10 +44,11 @@ export default function AddMaintenanceDialog({ selected = null }) {
     description: '',
     firstMaintenanceTaskDate: '',
     frequency: '',
+    anualCost: 0,
     estimatedDuration: 0,
   });
 
-  const { equipmentId, type, description, firstMaintenanceTaskDate, frequency, estimatedDuration } =
+  const { equipmentId, type, description, firstMaintenanceTaskDate, frequency, estimatedDuration, anualCost } =
     addForm;
 
   useEffect(() => {
@@ -84,6 +85,7 @@ export default function AddMaintenanceDialog({ selected = null }) {
       description: '',
       firstMaintenanceTaskDate: '',
       frequency: '',
+      anualCost: 0,
       estimatedDuration: 0,
     }));
     dispatch(closeDialog({ dialogType: 'addMaintenance' }));
@@ -178,6 +180,16 @@ export default function AddMaintenanceDialog({ selected = null }) {
                   name="estimatedDuration"
                   value={estimatedDuration}
                 />
+                <TextField
+                  fullWidth
+                  label="Costo Anual"
+                  variant="outlined"
+                  type="number"
+                  placeholder="Escriba el costo anual del mantenimiento"
+                  onChange={handleChange}
+                  name="anualCost"
+                  value={anualCost}
+                />
               </Stack>
               <TextField
                 fullWidth
@@ -188,7 +200,7 @@ export default function AddMaintenanceDialog({ selected = null }) {
                 value={description}
                 onChange={handleChange}
                 name="description"
-                rows={7.2}
+                rows={10.2}
               />
             </Stack>
           </Grid>

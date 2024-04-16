@@ -50,13 +50,7 @@ export default function EquipmentTableToolbar({
         </Tooltip>
       );
     }
-    return (
-      <Tooltip title="Filtrar lista">
-        <IconButton>
-          <Iconify icon="ic:round-filter-list" />
-        </IconButton>
-      </Tooltip>
-    );
+    return null;
   };
 
   return (
@@ -89,6 +83,7 @@ export default function EquipmentTableToolbar({
               />
             </InputAdornment>
           }
+          size="small"
         />
       )}
 

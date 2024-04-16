@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DataGrid } from '@mui/x-data-grid';
 import { Card, Stack, Button, Container, Typography, TableContainer } from '@mui/material';
 
+import { formatMaintenanceData } from 'src/utils/maintenance-utils';
+
 import { openDialog } from 'src/features/dialogs/dialogsSlice';
 import {
   fetchEquipment,
@@ -25,6 +27,7 @@ import MaintenanceActionMenu from '../maintenance-action-menu';
 import MaintenanceTableToolbar from '../maintenance-table-toolbar';
 import AddMaintenanceDialog from '../crud/add-maintenance-form-dialog';
 import EditMaintenanceFormDialog from '../crud/edit-maintenance-form-dialog';
+import ShowMaintenanceInfoDialog from '../crud/show-maintenance-info-dialog';
 import DeleteConfirmationDialog from '../crud/delete-maintenance-confirmation-dialog';
 
 // ----------------------------------------------------------------------
@@ -36,19 +39,48 @@ const columns = [
     headerName: 'Equipo',
     width: 200,
     headerAlign: 'center',
+    align: 'center',
   },
-  { field: 'description', headerName: 'Descripción', width: 260, headerAlign: 'center' },
+  // { field: 'description', headerName: 'Descripción', width: 260, headerAlign: 'center' },
+  {
+    field: 'cost',
+    headerName: 'Costo Unitario',
+    width: 120,
+    headerAlign: 'center',
+    align: 'center',
+  },
+  {
+    field: 'startDate',
+    headerName: 'Fecha de Inicio',
+    width: 200,
+    headerAlign: 'center',
+    align: 'center',
+  },
+  {
+    field: 'estimatedDuration',
+    headerName: 'Duración',
+    width: 100,
+    headerAlign: 'center',
+    align: 'center',
+  },
+  {
+    field: 'status',
+    headerName: 'Estado',
+    width: 80,
+    headerAlign: 'center',
+    align: 'center',
+  },
   {
     field: 'nextMaintenanceTaskDate',
-    headerName: 'Próximo Mantenimiento',
+    headerName: 'Próx. Mantenimiento',
     width: 220,
     headerAlign: 'center',
     align: 'center',
   },
   {
     field: 'frequency',
-    headerName: 'Frecuencia en Dias',
-    width: 180,
+    headerName: 'Frecuencia',
+    width: 120,
     headerAlign: 'center',
     align: 'center',
   },
@@ -73,6 +105,9 @@ export default function MaintenanceView() {
 
   const equipment = useSelector(selectEquipment);
   const equipmentStatus = useSelector(selectEquipmentStatus);
+
+  const [startDate, setStartDate] = useState('2023-01-01');
+  const [endDate, setEndDate] = useState('2024-12-31');
 
   // ---------------------- Effects ---------------------- //
 
@@ -108,23 +143,26 @@ export default function MaintenanceView() {
     dispatch(openDialog({ dialogType: 'addMaintenance' }));
   };
 
+  const handleShowInfo = () => {
+    console.log(selectedRows);
+    dispatch(openDialog({ dialogType: 'showMaintenanceInfo', data: selectedRows[0] }));
+  };
+
+  const handleFilterDates = (start, end) => {
+    setStartDate(start);
+    setEndDate(end);
+  };
+
   // ---------------------- Helpers ---------------------- //
 
-  const getEquipmentName = (equipmentId) => {
-    const foundEquipment = equipment.find((eq) => eq.id === equipmentId);
-    return foundEquipment ? foundEquipment.name : 'Equipo no encontrado';
-  };
+  const filteredMaintenances = maintenances.filter((maintenance) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const maintenanceDate = new Date(maintenance.startDate);
+    return maintenanceDate >= start && maintenanceDate <= end;
+  });
 
-  const formatNextDate = (nextDate) => {
-    const normalDate = new Date(nextDate);
-    return normalDate.toLocaleDateString('en-GB');
-  };
-
-  const rowsWithEquipmentName = maintenances.map((maintenance) => ({
-    ...maintenance,
-    equipmentName: getEquipmentName(maintenance.equipmentId),
-    nextMaintenanceTaskDate: formatNextDate(maintenance.nextMaintenanceTaskDate),
-  }));
+  const rowsWithEquipmentName = formatMaintenanceData(filteredMaintenances, equipment);
 
   const dataFiltered = rowsWithEquipmentName.filter((row) =>
     Object.values(row).some((value) =>
@@ -155,6 +193,9 @@ export default function MaintenanceView() {
           numSelected={selectedRows.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
+          onFilterDates={handleFilterDates}
+          dates={{ startDate, endDate }}
+          onShowInfo={handleShowInfo}
         />
         <Scrollbar>
           <TableContainer>
@@ -218,6 +259,8 @@ export default function MaintenanceView() {
       <DeleteConfirmationDialog />
 
       <EditMaintenanceFormDialog />
+
+      <ShowMaintenanceInfoDialog />
     </Container>
   );
 }

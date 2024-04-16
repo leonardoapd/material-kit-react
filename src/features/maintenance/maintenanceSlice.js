@@ -60,7 +60,11 @@ export const maintenanceSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(addMaintenance.fulfilled, (state, action) => {
-        state.maintenance.push(action.payload);
+        if (Array.isArray(action.payload) && action.payload.length > 0) {
+          action.payload.forEach((maintenance) => {
+            state.maintenance.push(maintenance);
+          });
+        }
       })
       .addCase(editMaintenance.fulfilled, (state, action) => {
         const { id } = action.payload;
@@ -78,6 +82,8 @@ export const maintenanceSlice = createSlice({
 });
 
 export const selectMaintenance = (state) => state.maintenance.maintenance;
+export const selectMaintenanceById = (state, maintenanceId) =>
+  state.maintenance.maintenance.find((maintenance) => maintenance.id === maintenanceId);
 export const selectMaintenanceStatus = (state) => state.maintenance.isLoading;
 export const selectMaintenanceError = (state) => state.maintenance.error;
 

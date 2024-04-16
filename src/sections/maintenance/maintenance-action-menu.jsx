@@ -8,8 +8,8 @@ import ActionMenu from 'src/components/action-menu/action-menu';
 export default function MaintenanceActionMenu({ maintenanceId }) {
   const dispatch = useDispatch();
 
-  const handleShowInfo = () => {
-    console.log('Mostrar información');
+  const handleShowInfo = (id) => {
+    dispatch(openDialog({ dialogType: 'showMaintenanceInfo', data: id }));
   };
 
   const handleEdit = (id) => {
@@ -22,7 +22,7 @@ export default function MaintenanceActionMenu({ maintenanceId }) {
 
   const maintenanceActions = [
     {
-      label: 'Ver tareas',
+      label: 'Ver Detalles',
       icon: 'eva:eye-fill',
       onClick: handleShowInfo,
     },

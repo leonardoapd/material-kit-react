@@ -34,3 +34,11 @@ export function calculateEstimatedDuration(startDate, endDate) {
   const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
   return `${hours}h ${minutes}m`;
 }
+
+export function calculateDurationInNumber(startDate, endDate) {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const duration = end - start;
+  const hours = Math.floor(duration / (1000 * 60 * 60));
+  return hours;
+}

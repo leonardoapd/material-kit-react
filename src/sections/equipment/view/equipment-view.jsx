@@ -37,7 +37,7 @@ const columns = [
   {
     field: 'name',
     headerName: 'Equipo',
-    width: 280,
+    width: 300,
     renderCell: (params) => (
       <EquipmentPhotoNameCell photo={params.row.photo} name={params.row.name} />
     ),
@@ -58,21 +58,21 @@ const columns = [
     headerAlign: 'center',
     align: 'center',
   },
-  {
-    field: 'serialNumber',
-    headerName: 'Serial',
-    width: 140,
-    headerAlign: 'center',
-    align: 'center',
-  },
-  { field: 'model', headerName: 'Modelo', width: 140, headerAlign: 'center', align: 'center' },
-  {
-    field: 'category',
-    headerName: 'Categoría',
-    width: 160,
-    headerAlign: 'center',
-    align: 'center',
-  },
+  // {
+  //   field: 'serialNumber',
+  //   headerName: 'Serial',
+  //   width: 140,
+  //   headerAlign: 'center',
+  //   align: 'center',
+  // },
+  // { field: 'model', headerName: 'Modelo', width: 140, headerAlign: 'center', align: 'center' },
+  // {
+  //   field: 'category',
+  //   headerName: 'Categoría',
+  //   width: 160,
+  //   headerAlign: 'center',
+  //   align: 'center',
+  // },
   {
     field: 'accountableName',
     headerName: 'Responsable',

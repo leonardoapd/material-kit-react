@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
@@ -18,6 +19,8 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
+
+import { calculateDurationInNumber } from 'src/utils/format-time';
 
 import { selectEquipment } from 'src/features/equipment/equipmentSlice';
 import { fetchMaintenanceTasks } from 'src/features/maintenance/maintenanceTaskSlice';
@@ -47,8 +50,9 @@ export default function EditMaintenanceFormDialog() {
     equipmentId: '',
     type: '',
     description: '',
-    firstMaintenanceTaskDate: '',
+    startDate: '',
     frequency: '',
+    cost: 0,
     estimatedDuration: 0,
   });
 
@@ -58,9 +62,12 @@ export default function EditMaintenanceFormDialog() {
         equipmentId: maintenance.equipmentId,
         type: maintenance.type,
         description: maintenance.description,
-        firstMaintenanceTaskDate: maintenance.firstMaintenanceTaskDate,
+        startDate: maintenance.startDate
+          ? format(new Date(maintenance.startDate), "yyyy-MM-dd'T'HH:mm")
+          : '',
         frequency: maintenance.frequency,
-        estimatedDuration: maintenance.estimatedDuration,
+        cost: maintenance.cost,
+        estimatedDuration: calculateDurationInNumber(maintenance.startDate, maintenance.endDate),
       });
     }
   }, [maintenance]);
@@ -86,8 +93,9 @@ export default function EditMaintenanceFormDialog() {
       equipmentId: '',
       type: '',
       description: '',
-      firstMaintenanceTaskDate: '',
+      startDate: '',
       frequency: '',
+      cost: 0,
       estimatedDuration: '',
     });
     dispatch(closeDialog({ dialogType: 'editMaintenance' }));
@@ -147,9 +155,9 @@ export default function EditMaintenanceFormDialog() {
                   variant="outlined"
                   type="datetime-local"
                   InputLabelProps={{ shrink: true }}
-                  value={editForm.firstMaintenanceTaskDate}
+                  value={editForm.startDate}
                   onChange={handleChange}
-                  name="firstMaintenanceTaskDate"
+                  name="startDate"
                 />
                 <FormControl fullWidth>
                   <InputLabel id="maintenance-frequency">Frecuencia de Mantenimiento</InputLabel>
@@ -182,6 +190,16 @@ export default function EditMaintenanceFormDialog() {
                   name="estimatedDuration"
                   value={editForm.estimatedDuration}
                 />
+                <TextField
+                  fullWidth
+                  label="Costo Unitario"
+                  variant="outlined"
+                  type="number"
+                  placeholder="Ingrese el costo unitario"
+                  onChange={handleChange}
+                  name="cost"
+                  value={editForm.cost}
+                />
               </Stack>
               <TextField
                 fullWidth
@@ -192,7 +210,7 @@ export default function EditMaintenanceFormDialog() {
                 value={editForm.description}
                 onChange={handleChange}
                 name="description"
-                rows={7.2}
+                rows={10.2}
               />
             </Stack>
           </Grid>

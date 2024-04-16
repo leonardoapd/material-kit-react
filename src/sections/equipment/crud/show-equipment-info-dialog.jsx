@@ -15,10 +15,13 @@ import {
   CardActions,
 } from '@mui/material';
 
+import { fDate } from 'src/utils/format-time';
+
 import { selectEquipment } from 'src/features/equipment/equipmentSlice';
 import { closeDialog, selectDialogOpen, selectDialogData } from 'src/features/dialogs/dialogsSlice';
 
 import Iconify from 'src/components/iconify';
+import DescriptionRenderer from 'src/components/description-renderer/description-renderer';
 
 export default function ShowEquipmentInfoDialog() {
   const dispatch = useDispatch();
@@ -30,7 +33,6 @@ export default function ShowEquipmentInfoDialog() {
 
   const equipment = inventory.find((item) => item.id === equipmentId);
 
-  const [expanded, setExpanded] = useState(false);
   const [info, setInfo] = useState({
     name: '',
     code: '',
@@ -54,43 +56,10 @@ export default function ShowEquipmentInfoDialog() {
     }
   }, [equipment]);
 
-  const purchaseDateFormatted = new Date(purchaseDate).toLocaleDateString('en-GB');
+  const purchaseDateFormatted = fDate(purchaseDate, 'dd/MM/yyyy');
 
   const handleClose = () => {
     dispatch(closeDialog({ dialogType: 'showEquipmentInfo' }));
-  };
-
-  const toggleExpanded = () => {
-    setExpanded(!expanded);
-  };
-
-  const renderDescription = () => {
-    const maxLength = 100; // Longitud máxima de la descripción antes de truncar
-    const maxHeight = 200; // Altura máxima de la descripción antes de agregar un scrollbar
-    if (description && description.length > maxLength && !expanded) {
-      return (
-        <div style={{ maxHeight: `${maxHeight}px`, overflowY: 'auto' }}>
-          <Typography variant="body2" color="text.secondary">
-            {`${description.substring(0, maxLength)}...`}
-          </Typography>
-          <Button onClick={toggleExpanded} size="small">
-            Ver más
-          </Button>
-        </div>
-      );
-    }
-    return (
-      <div style={{ maxHeight: `${maxHeight}px`, overflowY: 'auto' }}>
-        <Typography variant="body2" color="text.secondary">
-          {description}
-        </Typography>
-        {description && description.length > maxLength && (
-          <Button onClick={toggleExpanded} size="small">
-            Ver menos
-          </Button>
-        )}
-      </div>
-    );
   };
 
   const handleGenerateQR = () => {
@@ -147,7 +116,7 @@ export default function ShowEquipmentInfoDialog() {
           <Typography gutterBottom variant="h5" component="div">
             {name}
           </Typography>
-          {renderDescription()}
+          <DescriptionRenderer description={description || 'Sin descripción.'} />
           <Stack
             direction="row"
             spacing={2}
@@ -163,9 +132,6 @@ export default function ShowEquipmentInfoDialog() {
               <Typography variant="body2" color="text.secondary">
                 <strong>Ubicación:</strong> {location}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                <strong>Ultimo Mantenimiento Realizado:</strong> {purchaseDateFormatted}
-              </Typography>
             </Stack>
             <Stack direction="column">
               <Typography variant="body2" color="text.secondary">
@@ -176,9 +142,6 @@ export default function ShowEquipmentInfoDialog() {
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 <strong>Fecha de compra:</strong> {purchaseDateFormatted}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                <strong>Próximo Mantenimiento:</strong> {purchaseDateFormatted}
               </Typography>
             </Stack>
           </Stack>
