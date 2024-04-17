@@ -6,6 +6,8 @@ export const taskStatus = {
   Pendiente: '⌚',
   Ejecutado: '✅',
   Cancelado: '❌',
+  'En Curso': '⏳',
+  Reprogramado: '🔄',
 };
 
 export const taskFrequency = {
@@ -16,6 +18,18 @@ export const taskFrequency = {
   90: 'Trimestral',
   180: 'Semestral',
   360: 'Anual',
+};
+
+export const getMaintenanceColorByStatus = (status) => {
+  const statusColors = {
+    Pendiente: 'red',
+    'En Progreso': 'blue',
+    Ejecutado: '#43A047',
+    Cancelado: 'gray',
+    Reprogramado: 'orange',
+  };
+
+  return statusColors[status] || 'blue';
 };
 
 export const getEquipmentName = (equipmentId, equipment) => {

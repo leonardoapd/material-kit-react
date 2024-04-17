@@ -15,6 +15,11 @@ export const updateMaintenance = async (maintenanceData) => {
   return response.data;
 };
 
+export const updateMaintenanceStatus = async (maintenanceData) => {
+  const response = await apiClient.put(`maintenance/update-status/${maintenanceData.id}`, maintenanceData);
+  return response.data;
+}
+
 export const deleteMaintenance = async (maintenanceId) => {
   const response = await apiClient.delete(`maintenance/${maintenanceId}`);
   return response.data;

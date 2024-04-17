@@ -39,7 +39,8 @@ export default function EditEventDialog({ scheduler }) {
   };
 
   const handleConfirm = () => {
-    scheduler.onConfirm(formData, 'edit'); // 'edit' puede cambiar según sea necesario
+    console.log(formData);
+    // scheduler.onConfirm(formData, 'edit'); // 'edit' puede cambiar según sea necesario
   };
 
   return (
@@ -54,6 +55,7 @@ export default function EditEventDialog({ scheduler }) {
               value={formData.title}
               onChange={handleChange}
               fullWidth
+              disabled
             />
           </Grid>
           {scheduler.edited && (

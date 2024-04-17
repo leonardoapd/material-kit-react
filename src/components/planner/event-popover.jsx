@@ -7,14 +7,18 @@ import { Box, Stack, Button, Select, MenuItem, InputLabel, FormControl } from '@
 
 import { selectDialogData } from 'src/features/dialogs/dialogsSlice';
 import {
-  editMaintenanceTask,
-  selectMaintenanceTasks,
-} from 'src/features/maintenance/maintenanceTaskSlice';
+  selectMaintenance,
+  editMaintenanceStatus
+} from 'src/features/maintenance/maintenanceSlice';
+// import {
+//   editMaintenanceTask,
+//   selectMaintenanceTasks,
+// } from 'src/features/maintenance/maintenanceTaskSlice';
 
 export default function EventPopover({ onStatusChange }) {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const maintenanceTasks = useSelector(selectMaintenanceTasks);
+  const maintenances = useSelector(selectMaintenance);
   const taskId = useSelector((state) => selectDialogData(state, 'showMaintenanceTask'));
 
   const [task, setTask] = useState({
@@ -29,9 +33,9 @@ export default function EventPopover({ onStatusChange }) {
 
   useEffect(() => {
     if (taskId) {
-      setTask(maintenanceTasks.find((mtask) => mtask.id === taskId));
+      setTask(maintenances.find((mtask) => mtask.id === taskId));
     }
-  }, [taskId, maintenanceTasks]);
+  }, [taskId, maintenances]);
 
   const handleConfirm = async () => {
     let updatedTask;
@@ -43,8 +47,8 @@ export default function EventPopover({ onStatusChange }) {
     }
     setTask(updatedTask);
 
-    const response = await dispatch(editMaintenanceTask(updatedTask));
-    if (editMaintenanceTask.fulfilled.match(response)) {
+    const response = await dispatch(editMaintenanceStatus(updatedTask));
+    if (editMaintenanceStatus.fulfilled.match(response)) {
       enqueueSnackbar('Estado del mantenimiento actualizado correctamente', { variant: 'success' });
       onStatusChange();
     } else {

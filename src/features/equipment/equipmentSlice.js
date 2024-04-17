@@ -70,6 +70,7 @@ export const equipmentSlice = createSlice({
 });
 
 export const selectEquipment = (state) => state.equipment.equipment;
+export const selectEquipmentById = (state, equipmentId) => state.equipment.equipment.find((equipment) => equipment.id === equipmentId);
 export const selectEquipmentStatus = (state) => state.equipment.isLoading;
 export const selectEquipmentError = (state) => state.equipment.error;
 

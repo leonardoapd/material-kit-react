@@ -5,6 +5,7 @@ import {
   createMaintenance,
   updateMaintenance,
   deleteMaintenance,
+  updateMaintenanceStatus,
 } from 'src/queries/maintenance/maintenanceService';
 
 export const fetchMaintenance = createAsyncThunk('maintenance/fetchMaintenance', async () => {
@@ -24,6 +25,14 @@ export const editMaintenance = createAsyncThunk(
   'maintenance/editMaintenance',
   async (maintenanceData) => {
     const response = await updateMaintenance(maintenanceData);
+    return response;
+  }
+);
+
+export const editMaintenanceStatus = createAsyncThunk(
+  'maintenance/editMaintenanceStatus',
+  async (maintenanceData) => {
+    const response = await updateMaintenanceStatus(maintenanceData);
     return response;
   }
 );
@@ -77,6 +86,16 @@ export const maintenanceSlice = createSlice({
         state.maintenance = state.maintenance.filter(
           (maintenance) => maintenance.id !== action.payload.id
         );
+      })
+      .addCase(editMaintenanceStatus.fulfilled, (state, action) => {
+        const { id } = action.payload;
+        const existingMaintenanceIndex = state.maintenance.findIndex(
+          (maintenance) => maintenance.id === id
+        );
+        state.maintenance[existingMaintenanceIndex] = action.payload;
+      })
+      .addCase(editMaintenanceStatus.rejected, (state, action) => {
+        state.error = action.error.message;
       });
   },
 });

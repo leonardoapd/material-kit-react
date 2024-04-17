@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import { styled } from '@mui/system';
 import { Box, Typography } from '@mui/material';
 
+import { fDate } from 'src/utils/format-time';
+
 const StyledEventBox = styled(Box)(({ theme, event }) => ({
   border: `1px solid ${theme.palette.common.white}`, // Borde blanco
   borderRadius: theme.shape.borderRadius,
@@ -13,11 +15,6 @@ const StyledEventBox = styled(Box)(({ theme, event }) => ({
   height: '100%',
 }));
 
-const formatDate = (date) => {
-  const options = { hour: '2-digit', minute: '2-digit' };
-  return new Date(date).toLocaleTimeString([], options);
-};
-
 export default function RenderedEvent({ event, ...props }) {
   const { title, start, end } = event;
 
@@ -25,7 +22,7 @@ export default function RenderedEvent({ event, ...props }) {
     <StyledEventBox {...props} draggable={false} event={event}>
       <Typography variant="body2">{title}</Typography>
       <Typography variant="caption">
-        De {formatDate(start)} A {formatDate(end)}
+        Desde {fDate(start, 'dd/MM/yyyy HH:mm a')} hasta {fDate(end, 'dd/MM/yyyy HH:mm a')}
       </Typography>
     </StyledEventBox>
   );

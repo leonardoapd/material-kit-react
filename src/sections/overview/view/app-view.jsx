@@ -7,6 +7,8 @@ import Typography from '@mui/material/Typography';
 
 import {
   selectChartsLoading,
+  fetchMaintenanceCost,
+  selectMaintenanceCost,
   fetchMaintenanceCounts,
   selectMaintenanceCounts,
   fetchMaintenanceComplience,
@@ -35,12 +37,14 @@ export default function AppView() {
   const dispatch = useDispatch();
   const monthlyCompletionRates = useSelector(selectMaintenanceComplience);
   const maintenanceCounts = useSelector(selectMaintenanceCounts);
+  const maintenanceCost = useSelector(selectMaintenanceCost);
   const chartsLoading = useSelector(selectChartsLoading);
 
   useEffect(() => {
     if (chartsLoading === 'idle') {
       dispatch(fetchMaintenanceComplience());
       dispatch(fetchMaintenanceCounts());
+      dispatch(fetchMaintenanceCost());
     }
   }, [chartsLoading, dispatch]);
 
@@ -50,6 +54,9 @@ export default function AppView() {
 
   const countsLabels = Object.keys(maintenanceCounts);
   const countsSeries = Object.values(maintenanceCounts);
+
+  const costLabels = Object.keys(maintenanceCost);
+  const costSeries = Object.values(maintenanceCost);
 
   return (
     <Container maxWidth="xl">
@@ -99,10 +106,39 @@ export default function AppView() {
                   type: 'area',
                   fill: 'gradient',
                   data: series.map(() => 96),
+                  color: '#CECECE',
                 },
               ],
               colors: ['#F67A5B'],
             }}
+            complianceType="compliance"
+          />
+        </Grid>
+
+        <Grid xs={12} md={6} lg={6}>
+          <AppMaintenanceCompliance
+            title="Costos de mantenimiento"
+            subheader="Year average: $1,250"
+            chart={{
+              labels: costLabels,
+              series: [
+                {
+                  name: 'Costo Mensual',
+                  type: 'column',
+                  fill: 'solid',
+                  data: costSeries,
+                },
+                {
+                  name: 'Presupuestado',
+                  type: 'area',
+                  fill: 'gradient',
+                  data: costSeries.map(() => 1200000),
+                  color: '#CECECE',
+                },
+              ],
+              colors: ["#7DDA58"],
+            }}
+            complianceType="cost"
           />
         </Grid>
       </Grid>

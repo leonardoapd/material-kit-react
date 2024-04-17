@@ -4,11 +4,13 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 
+import { fCurrency } from 'src/utils/format-number';
+
 import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
 
-export default function AppMaintenanceCompliance({ title, subheader, chart, ...other }) {
+export default function AppMaintenanceCompliance({ title, subheader, chart, complianceType, ...other }) {
   const { labels, colors, series, options } = chart;
 
   const chartOptions = useChart({
@@ -31,7 +33,11 @@ export default function AppMaintenanceCompliance({ title, subheader, chart, ...o
       y: {
         formatter: (value) => {
           if (typeof value !== 'undefined') {
-            return `${value.toFixed(0)}%`;
+            if (complianceType === 'cost') {
+              return fCurrency(value);
+            } if (complianceType === 'compliance') {
+              return `${value}%`;
+            }
           }
           return value;
         },
@@ -62,4 +68,5 @@ AppMaintenanceCompliance.propTypes = {
   chart: PropTypes.object,
   subheader: PropTypes.string,
   title: PropTypes.string,
+  complianceType: PropTypes.string,
 };

@@ -6,7 +6,7 @@ export const getMaintenanceComplience = async () => {
 };
 
 export const getMaintenanceCost = async () => {
-  const response = await apiClient.get('maintenancechart/monthly-cost');
+  const response = await apiClient.get('maintenancechart/maintenance-costs');
   return response.data;
 };
 

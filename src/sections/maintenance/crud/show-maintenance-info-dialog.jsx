@@ -31,6 +31,7 @@ export default function ShowMaintenanceInfoDialog() {
     endDate: '',
     status: '',
     comments: '',
+    completedDate: '',
   });
 
   useEffect(() => {
@@ -45,6 +46,7 @@ export default function ShowMaintenanceInfoDialog() {
         endDate: fDate(maintenance.endDate, 'dd/MM/yyyy HH:mm'),
         status: maintenance.status || '',
         comments: maintenance.comments || '',
+        completedDate: maintenance.completedDate ? fDate(maintenance.completedDate, 'dd/MM/yyyy HH:mm') : '',
       });
     }
   }, [equipment, maintenance]);
@@ -73,8 +75,11 @@ export default function ShowMaintenanceInfoDialog() {
               <Typography variant="body2" color="text.secondary">
                 <strong>Fecha de fin:</strong> {info.endDate}
               </Typography>
+              <Typography variant="body2" color="text.secondary">
+                <strong>Fecha de ejecución:</strong> {info.completedDate || 'Pendiente'}
+              </Typography>
             </Stack>
-            <Stack direction="column">
+            <Stack direction="column" sx={{ pt: 1 }}>
               <Typography variant="body2" color="text.secondary">
                 <strong>Estado:</strong> {info.status}
               </Typography>

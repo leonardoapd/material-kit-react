@@ -6,21 +6,23 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Box, Card, CardHeader } from '@mui/material';
 
+import { capitalizeFirstLetter, getMaintenanceColorByStatus } from 'src/utils/maintenance-utils';
+
 import { openDialog } from 'src/features/dialogs/dialogsSlice';
 import {
   fetchMaintenanceCounts,
   fetchMaintenanceComplience,
 } from 'src/features/charts/chartsSlice';
 import {
+  fetchEquipment,
+  selectEquipment,
+  selectEquipmentStatus,
+} from 'src/features/equipment/equipmentSlice';
+import {
   fetchMaintenance,
   selectMaintenance,
   selectMaintenanceStatus,
 } from 'src/features/maintenance/maintenanceSlice';
-import {
-  fetchMaintenanceTasks,
-  selectMaintenanceTasks,
-  selectMaintenanceTaskStatus,
-} from 'src/features/maintenance/maintenanceTaskSlice';
 
 import {
   EventPopover,
@@ -31,16 +33,16 @@ import {
 
 export default function AppPlanner({ title, subheader }) {
   const dispatch = useDispatch();
-  const maintenanceTasks = useSelector(selectMaintenanceTasks);
-  const maintenanceTaskStatus = useSelector(selectMaintenanceTaskStatus);
   const maintenances = useSelector(selectMaintenance);
   const maintenanceStatus = useSelector(selectMaintenanceStatus);
+  const inventory = useSelector(selectEquipment);
+  const equipmentStatus = useSelector(selectEquipmentStatus);
 
   useEffect(() => {
-    if (maintenanceTaskStatus === 'idle') {
-      dispatch(fetchMaintenanceTasks());
+    if (equipmentStatus === 'idle') {
+      dispatch(fetchEquipment());
     }
-  }, [maintenanceTaskStatus, dispatch]);
+  }, [equipmentStatus, dispatch]);
 
   useEffect(() => {
     if (maintenanceStatus === 'idle') {
@@ -48,30 +50,18 @@ export default function AppPlanner({ title, subheader }) {
     }
   }, [maintenanceStatus, dispatch]);
 
-  const getColorByStatus = (status) => {
-    const statusColors = {
-      Pendiente: 'red',
-      'En Progreso': 'blue',
-      Ejecutado: '#43A047',
-      Cancelado: 'gray',
-      Reprogramado: 'orange',
-    };
+  const events = maintenances.map((maintenance) => {
+    const equipment = inventory.find((eq) => eq.id === maintenance.equipmentId);
 
-    return statusColors[status] || 'blue';
-  };
-
-  const events = maintenances.flatMap((maintenance) => {
-    const tasks = maintenanceTasks.filter((task) => task.maintenanceId === maintenance.id);
-
-    return tasks.map((task) => ({
-      event_id: task.id,
-      title: task.title,
-      start: new Date(task.startDate),
-      end: new Date(task.endDate),
+    return {
+      event_id: maintenance.id,
+      title: `${capitalizeFirstLetter(equipment.name)} - ${maintenance.type}`,
+      start: new Date(maintenance.startDate),
+      end: new Date(maintenance.endDate),
       draggable: false,
       deletable: false,
-      color: getColorByStatus(task.status),
-    }));
+      color: getMaintenanceColorByStatus(maintenance.status),
+    };
   });
 
   const handleTileClick = (event) => {
