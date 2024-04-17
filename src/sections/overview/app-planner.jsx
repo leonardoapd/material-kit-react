@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { es } from 'date-fns/locale';
+import { Suspense, useEffect } from 'react';
 import { Scheduler } from '@aldabil/react-scheduler';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -49,6 +49,14 @@ export default function AppPlanner({ title, subheader }) {
       dispatch(fetchMaintenance());
     }
   }, [maintenanceStatus, dispatch]);
+
+  if (equipmentStatus === 'loading' || maintenanceStatus === 'loading' || !inventory.length) {
+    return (
+      <Suspense fallback={<div>Loading...</div>}>
+        <div>Loading...</div>
+      </Suspense>
+    );
+  }
 
   const events = maintenances.map((maintenance) => {
     const equipment = inventory.find((eq) => eq.id === maintenance.equipmentId);
